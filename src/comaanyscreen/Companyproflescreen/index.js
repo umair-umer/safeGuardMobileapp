@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity,  View, SafeAreaView, ImageBackground, ScrollView } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, ImageBackground, ScrollView, Platform } from 'react-native';
 const { width, height } = Dimensions.get("window");
 import imagebackground from '../../Assests/imagebackground.png';
 import { calculateFontSize } from '../../Utilites/font';
@@ -7,7 +7,7 @@ import profileimage from '../../Assests/Profilekiimg.png';
 import Feather from 'react-native-vector-icons/dist/Feather';
 import Ionicons from 'react-native-vector-icons/dist/Ionicons';
 import { useRoute } from '@react-navigation/native';
-const Companyprofilescreen = ({navigation}) => {
+const Companyprofilescreen = ({ navigation }) => {
   const [show, setshow] = useState(false)
   return (
     <SafeAreaView style={styles.container}>
@@ -18,7 +18,10 @@ const Companyprofilescreen = ({navigation}) => {
             <Text style={styles.profiletextheader}>My Profile</Text>
 
           </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: width * 0.04 }}>
+          <View style={{ 
+            flexDirection: "row",
+            justifyContent: "space-between", 
+            alignItems: "center", paddingHorizontal: width * 0.01 }}>
             <View style={styles.prof}>
               <View style={styles.profileimage}>
                 <Image resizeMode='cover' style={{ width: "1005", height: "100%" }} source={profileimage} />
@@ -30,7 +33,7 @@ const Companyprofilescreen = ({navigation}) => {
               </View>
             </View>
             <TouchableOpacity>
-              <Feather name="edit" color="#fff" size={calculateFontSize(20)} onPress={()=>navigation.navigate('editprofile')} />
+              <Feather name="edit" color="#fff" size={calculateFontSize(20)} onPress={() => navigation.navigate('editprofile')} />
             </TouchableOpacity>
           </View>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: width * 0.04, marginTop: height * 0.02, }}>
@@ -43,27 +46,27 @@ const Companyprofilescreen = ({navigation}) => {
 
         </ImageBackground>
       </View>
-        <ScrollView>
-      <View style={{ paddingHorizontal: width * 0.04, }}>
-        <View style={styles.aboutparacontainer}>
-          <Text style={styles.aboutmehead}>about company </Text>
-          <Text style={styles.textpara}>
-          Securitas USA is the most locally-focused security company in the country
-          Our 80,000+ employees help organizations of all sizes achieve superior security programs and results.
-         </Text>
+      <ScrollView>
+        <View style={{ paddingHorizontal: width * 0.04, }}>
+          <View style={styles.aboutparacontainer}>
+            <Text style={styles.aboutmehead}>about company </Text>
+            <Text style={styles.textpara}>
+              Securitas USA is the most locally-focused security company in the country
+              Our 80,000+ employees help organizations of all sizes achieve superior security programs and results.
+            </Text>
+          </View>
+
+
+
+
+          <View style={styles.setmem}><Text style={styles.txt}>Setting</Text><Ionicons name="chevron-forward-sharp" color="#949494" size={20} /></View>
+          <View style={styles.divder}></View>
+          <View style={styles.setmem}><Text style={styles.txt} >Membership</Text><Ionicons name="chevron-forward-sharp" color="#949494" size={20} /></View>
+
+
+
+
         </View>
-
-
-        
-
-<View style={styles.setmem}><Text style={styles.txt}>Setting</Text><Ionicons name="chevron-forward-sharp" color="#949494" size={20} /></View>
-<View style={styles.divder}></View>
-<View style={styles.setmem}><Text style={styles.txt} >Membership</Text><Ionicons name="chevron-forward-sharp" color="#949494" size={20}  /></View>
-
-
-
-
-      </View>
       </ScrollView>
     </SafeAreaView>
   )
@@ -74,27 +77,52 @@ export default Companyprofilescreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
-
-
+    ...Platform.select({
+      ios: {
+        flex: 1
+      }
+    })
   },
   bgresi: {
     width: width,
     height: height * 0.3,
-    backgroundColor: "red"
+    backgroundColor: "red",
+    ...Platform.select({
+      ios: {
+        width: width,
+        height: height * 0.3,
+        backgroundColor: "red",
+      }
+    })
 
   },
   heder: {
-    paddingVertical: height * 0.04,
+    // paddingVertical: height * 0.04,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    ...Platform.select({
+      ios: {
+        // paddingVertical: height * 0.02,
+        justifyContent: "center",
+        alignItems: "center",
+      }
+    })
   },
   profiletextheader: {
     color: "#fff",
     fontSize: calculateFontSize(20),
     textTransform: "capitalize",
     fontFamily: "Poppins",
-    fontWeight: "700"
+    fontWeight: "700",
+    ...Platform.select({
+      ios: {
+        color: "#fff",
+        fontSize: calculateFontSize(20),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+        fontWeight: "700",
+      }
+    })
   },
   profileimage: {
     width: width * 0.20,
@@ -119,7 +147,18 @@ const styles = StyleSheet.create({
     fontSize: calculateFontSize(20),
     textTransform: "capitalize",
     fontFamily: "Poppins",
-    fontWeight: "700"
+    fontWeight: "700",
+    ...Platform.select({
+      ios: {
+        color: "#fff",
+        fontSize: calculateFontSize(20),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+        fontWeight: "700",
+        paddingVertical: height * 0.03
+      }
+
+    })
   },
   premail: {
     marginTop: height * 0.01,
@@ -127,6 +166,15 @@ const styles = StyleSheet.create({
     fontSize: calculateFontSize(13),
     textTransform: "capitalize",
     fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        marginTop: height * 0.01,
+        color: "#fff",
+        fontSize: calculateFontSize(13),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+      }
+    })
     // fontWeight:"700"
   },
   prnumb: {
@@ -134,13 +182,27 @@ const styles = StyleSheet.create({
     fontSize: calculateFontSize(13),
     textTransform: "capitalize",
     fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#fff",
+        fontSize: calculateFontSize(13),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+      }
+    })
     // fontWeight:"700"
   },
   vbgcon: {
     justifyContent: "center",
     alignItems: "center",
-
-    paddingHorizontal: width * 0.03,
+    paddingHorizontal: width * 0.04,
+    ...Platform.select({
+      ios: {
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: width * 0.04,
+      }
+    })
 
   },
   vbgcon1: {
@@ -150,50 +212,118 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderColor: "#fff",
     paddingHorizontal: width * 0.09,
+    ...Platform.select({
+      ios: {
+        justifyContent: "center",
+        alignItems: "center",
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderColor: "#fff",
+        paddingHorizontal: width * 0.09,
+      }
+    })
   },
   probgtext: {
     color: "#fff",
     fontSize: calculateFontSize(13),
     textTransform: "capitalize",
     fontFamily: "Poppins",
+    ...Platform.select({
+      ios:{
+        color: "#fff",
+        fontSize: calculateFontSize(13),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+      }
+    })
   },
   aboutmehead: {
     color: "#000",
     fontSize: calculateFontSize(25),
     textTransform: "capitalize",
     fontFamily: "Poppins",
-    fontWeight: "700"
+    fontWeight: "700",
+    ...Platform.select({
+      ios:{
+        color: "#000",
+    fontSize: calculateFontSize(25),
+    textTransform: "capitalize",
+    fontFamily: "Poppins",
+    fontWeight: "700",
+      }
+    })
   },
-  workexperdive:{
+  workexperdive: {
     color: "#000",
     fontSize: calculateFontSize(25),
     textTransform: "capitalize",
     fontFamily: "Poppins",
     fontWeight: "700",
-    marginTop:height*0.03,
+    marginTop: height * 0.03,
+    ...Platform.select({
+      ios:{
+        color: "#000",
+        fontSize: calculateFontSize(25),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+        fontWeight: "700",
+        marginTop: height * 0.03,
+      }
+    })
   },
   textpara: {
     color: "#000",
     fontSize: calculateFontSize(13),
     textTransform: "capitalize",
     fontFamily: "Poppins",
+    ...Platform.select({
+      ios:{
+        color: "#000",
+        fontSize: calculateFontSize(13),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+      }
+    })
   },
   aboutparacontainer: {
     paddingHorizontal: width * 0.03,
     paddingVertical: height * 0.03,
     borderBottomWidth: 1,
-    borderBottomColor: "#CACACA"
+    borderBottomColor: "#CACACA",
+    ...Platform.select({
+      ios:{
+        paddingHorizontal: width * 0.03,
+        paddingVertical: height * 0.03,
+        borderBottomWidth: 1,
+        borderBottomColor: "#CACACA",
+      }
+    })
   },
   readmore: {
     color: "#004F98",
     fontSize: calculateFontSize(13),
     textTransform: "capitalize",
     fontFamily: "Poppins",
+    ...Platform.select({
+      ios:{
+        color: "#004F98",
+        fontSize: calculateFontSize(13),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+      }
+    })
   },
   skillscontainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingTop: height * 0.02,
+    ...Platform.select({
+      ios:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingTop: height * 0.02,
+      }
+    })
   },
   skillpoincontainer: {
     flexDirection: "row",
@@ -208,7 +338,7 @@ const styles = StyleSheet.create({
     marginHorizontal: width * 0.01,
     padding: 5,
     marginVertical: height * 0.009,
-    borderRadius:5
+    borderRadius: 5
   },
   skilltext: {
     color: "#000",
@@ -232,55 +362,55 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  wrkexperience:{
-    flexDirection:"row",
-    alignItems:"center",
-    paddingTop:height*0.02,
-   
+  wrkexperience: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: height * 0.02,
+
   },
-  wrkexp:{
+  wrkexp: {
     color: "#000",
     fontSize: calculateFontSize(13),
     textTransform: "capitalize",
     fontFamily: "Poppins",
-  
+
   },
-  badgeimagecontainer:{
-    width:width,
-    height:height*0.35,
+  badgeimagecontainer: {
+    width: width,
+    height: height * 0.35,
     // paddingVertical:height*0.03,
-  
 
-},
-badgeimagecontainerpareent:{
-    width:width,
-    height:height*0.25,
-    backgroundColor:"#EAEAEA",
-    justifyContent:"center",
-    alignItems:"center"
-},
 
-iconbtn:{
+  },
+  badgeimagecontainerpareent: {
+    width: width,
+    height: height * 0.25,
+    backgroundColor: "#EAEAEA",
+    justifyContent: "center",
+    alignItems: "center"
+  },
 
-     flexDirection:"row",
-     
-},
-setmem: {
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginVertical: height * 0.01,
-  color: "#000"
+  iconbtn: {
 
-},
-divder: {
-  borderBottomWidth: 1,
-  borderBottomColor: "#949494"
-},
-txt: {
-  color: "#000",
-  fontSize: calculateFontSize(14),
-  fontWeight: "600"
-}
+    flexDirection: "row",
+
+  },
+  setmem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: height * 0.01,
+    color: "#000"
+
+  },
+  divder: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#949494"
+  },
+  txt: {
+    color: "#000",
+    fontSize: calculateFontSize(14),
+    fontWeight: "600"
+  }
 
 })

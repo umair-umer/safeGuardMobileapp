@@ -24,6 +24,7 @@ import {connect, useDispatch, useSelector} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {setAuthToken, setUserData} from '../../store/Action';
 import LOGO from '../../Assests/loginImg.png'
+import { baseUrl } from '../../Utilites';
 
 const Singupscreen = ({navigation, setAuthToken}) => {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ const HandleSignup= async()=>{
 
     const config = {
       method: 'post',
-      url: 'https://45be-58-65-211-93.ngrok-free.app/api/v1/safeguard/auth/signup',
+      url: `${baseUrl}/auth/signup`,
       headers: { 
         'Content-Type': 'application/json',
         // Include any other necessary headers here
@@ -77,10 +78,10 @@ const HandleSignup= async()=>{
       setRegistrationError(error.response.data.error);
     } 
     
-    // finally {
-    //   setLoading(false); // Hide the loader
-    // }
-    // navigation.navigate("wellcome")
+    finally {
+      // setLoading(false); // Hide the loader
+    }
+
 }
 useEffect(() => {
   // Check if a button triggered the registration
@@ -218,6 +219,9 @@ const styles = StyleSheet.create({
         width: width * 0.32,
         height: height * 0.14,
         overflow: 'hidden',
+        // justifyContent:"center",
+        // alignItems:"center",
+        marginHorizontal:width*0.34,
       
       },
     }),

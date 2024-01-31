@@ -4,8 +4,10 @@ const { width, height } = Dimensions.get("window");
 import IMG from '../../Assests/loginImg.png'
 import { Button } from '../../Components';
 import { calculateFontSize } from '../../Utilites/font';
+import { useNavigation } from '@react-navigation/native';
 
-function Wellcome({navigation}) {
+function Wellcome() {
+  const navigation = useNavigation()
   return (
 
     <SafeAreaView style={styles.container}>

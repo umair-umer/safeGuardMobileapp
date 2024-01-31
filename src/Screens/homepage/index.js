@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef ,useEffect} from 'react';
 import { FlatList, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, TextInput, ImageBackground, ScrollView } from 'react-native';
 const { width, height } = Dimensions.get("window");
 import imagebackground from '../../Assests/imagebackground.png';
 import { calculateFontSize } from '../../Utilites/font';
 import EvilIcons from 'react-native-vector-icons/EvilIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-
+import axios from "axios"
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { Button, InputWithLeftIcon } from '../../Components';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,14 +14,44 @@ import security from '../../Assests/security.png';
 import savedicon from '../../Assests/savedicon.png';
 import armedsecurity from '../../Assests/armedsecurity.png';
 // import React, { useState, useRef } from 'react';
-import { connect } from 'react-redux'; // Import connect
+import { connect, useSelector } from 'react-redux'; // Import connect
 import { saveJob } from '../../store/Action'; // Import your action creator
+import { baseUrl } from '../../Utilites';
 
 const Home = ({ navigation, savedJobs, saveJob }) => {
-
+    const authToken = useSelector(state => state.logiToken.token);
+    console.log(authToken,"==>");
+    useEffect(() => {
+        fetchProfileData();
+    }, []);
+    const [profileData, setProfileData] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [showAll, setShowAll] = useState(false);
     console.log("Saved Jobs home:", savedJobs);
-    // Sample data for the job listings
+
+    const fetchProfileData = async () => {
+        setIsLoading(true);
+        const config = {
+            method: 'get',
+            url: `${baseUrl}/auth/profile`,
+            headers: { 
+                'Authorization': `Bearer ${authToken}`,
+            }
+        };
+    
+        try {
+            const response = await axios.request(config);
+            setProfileData(response.data.data.name);
+            console.log("Profile Data:", response.data.data.name);
+        } catch (error) {
+            console.error("Error fetching profile data:", error);
+            setError(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const data = [
         { key: '1', title: 'Gate Guard', location: 'PeopleReady .Eagle Pass, TX', image: DP },
         { key: '2', title: 'Security Patrol Guard', location: 'Signal of Seattle    Mount , WA', image: security },
@@ -115,7 +145,7 @@ const Home = ({ navigation, savedJobs, saveJob }) => {
 
                         <View style={{ paddingHorizontal: width * 0.06, paddingVertical: height * 0.09, }}>
                             <View>
-                                <Text style={styles.wellcome}>Welcome Ben</Text>
+                                <Text style={styles.wellcome}>Welcome {profileData}</Text>
                             </View>
 
                             <View style={styles.weldiv}>

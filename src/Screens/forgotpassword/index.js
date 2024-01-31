@@ -19,6 +19,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import axios from 'axios';
 import Loader from '../../Components/Loader';
 import {connect, useSelector} from 'react-redux';
+import { baseUrl } from '../../Utilites';
 
 const Forgotpassword = ({navigation}) => {
   const authToken = useSelector(state => state.auth); // Assuming 'authToken' is the key in your Redux state where the token is stored
@@ -49,7 +50,7 @@ const Forgotpassword = ({navigation}) => {
       // Set up the Axios config with the proper headers for JSON
       const config = {
         method: 'post',
-        url: 'https://45be-58-65-211-93.ngrok-free.app/api/v1/safeguard/auth/forgot',
+        url: `${baseUrl}auth/forgot`,
         headers: {
           'Content-Type': 'application/json', // Indicate that you're sending JSON data
         },

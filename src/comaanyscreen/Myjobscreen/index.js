@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View,SafeAreaView } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View,SafeAreaView,Platform } from 'react-native'
 const{width, height}= Dimensions.get("window")
 function Myjobslectionscreen({navigation}) {
   return (
@@ -45,7 +45,17 @@ const styles = StyleSheet.create({
 
          justifyContent:"center",
          paddingHorizontal:width*0.04,
-         backgroundColor:"#fff"
+         backgroundColor:"#fff",
+         ...Platform.select({
+
+          ios:{
+
+            justifyContent:"center",
+            paddingHorizontal:width*0.06,
+            backgroundColor:"#fff",
+
+          }
+         })
          
     },
     heading:{
@@ -55,26 +65,58 @@ const styles = StyleSheet.create({
            fontSize:19,
            paddingVertical:height*0.05,
            fontWeight:"500",
-           textAlign:"center"
+           textAlign:"center",
+            ...Platform.select({
+              ios:{
+                color:"#1C75BC",
+                fontSize:19,
+                paddingVertical:height*0.05,
+                fontWeight:"500",
+                textAlign:"center",
+
+              }
+            })
     },
     viewjob:{
 
 
            width:width*0.9,
            height:height*0.5,
+           ...Platform.select({
+
+            ios:{
+
+              width:width*0.9,
+              height:height*0.5,
+            }
+           })
     },
  viewjobheading:{
 
 
        fontSize:20,
        fontWeight:"700",
-       color:"grey"
+       color:"grey",
+       ...Platform.select({
+        ios:{
+          fontSize:20,
+          fontWeight:"700",
+          color:"grey",
+          paddingHorizontal:width*0.04
+        }
+       })
  },
  btncon:{
 
 
     paddingVertical:height*0.12,
-    paddingHorizontal:width*0.01
+    paddingHorizontal:width*0.01,
+    ...Platform.select({
+      ios:{
+    paddingVertical:height*0.12,
+    paddingHorizontal:width*0.05,
+      }
+    })
  },
 
  btn:{
@@ -86,7 +128,19 @@ const styles = StyleSheet.create({
       justifyContent:"center",
       alignItems:"center",
       borderRadius:10,
-      marginVertical:height*0.005
+      marginVertical:height*0.005,
+      ...Platform.select({
+
+        ios:{
+          width:width*0.9,
+          height:height*0.07,
+          backgroundColor:"#1C75BC",
+          justifyContent:"center",
+          alignItems:"center",
+          borderRadius:10,
+          marginVertical:height*0.005,
+        }
+      })
  },
  btntx:{
 
@@ -94,6 +148,15 @@ const styles = StyleSheet.create({
       color:"#fff",
       fontSize:16,
       fontWeight:"500",
+      ...Platform.select({
+        ios:{
+
+          color:"#fff",
+          fontSize:16,
+          fontWeight:"500",
+
+        }
+      })
 
  },
  btn2:{
@@ -106,7 +169,20 @@ const styles = StyleSheet.create({
     justifyContent:"center",
     alignItems:"center",
     borderRadius:10,
-    marginVertical:height*0.005
+    marginVertical:height*0.005,
+    ...Platform.select({
+
+      ios:{
+        width:width*0.9,
+        height:height*0.07,
+        borderColor:"#1C75BC",
+        borderWidth:1,
+        justifyContent:"center",
+        alignItems:"center",
+        borderRadius:10,
+        marginVertical:height*0.005,
+      }
+    })
 },
 btntxt:{
 
@@ -114,6 +190,12 @@ btntxt:{
     color:"#1C75BC",
     fontSize:16,
     fontWeight:"500",
+    ...Platform.select({
+    
+      color:"#1C75BC",
+      fontSize:16,
+      fontWeight:"500",
+    })
 
 },
 

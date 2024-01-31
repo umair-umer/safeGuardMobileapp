@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import {FlatList, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, TextInput, ScrollView } from 'react-native';
+import { FlatList, Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, TextInput, ScrollView } from 'react-native';
 const { width, height } = Dimensions.get("window");
 import Vector from '../../Assests/Vector.png';
 import profileimage from '../../Assests/profileimage.png';
@@ -7,7 +7,7 @@ import { calculateFontSize } from '../../Utilites/font';
 import FontAwesome5 from 'react-native-vector-icons/dist/FontAwesome5';
 import { Button, InputText, Resgistrationsuccesmodal } from '../../Components';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-const IndividualProfileregistry = ({navigation}) => {
+const IndividualProfileregistry = ({ navigation }) => {
     const [name, setName] = useState('');
     const [address, setAddress] = useState('');
     const [email, setEmail] = useState('');
@@ -74,134 +74,136 @@ const IndividualProfileregistry = ({navigation}) => {
 
     const [profileImage, setProfileImage] = useState('')
     const profilepicker = () => {
-  
+
         let option = {
-    
+
             storageoption: {
                 path: "images"
             }
         }
-    
+
         launchImageLibrary(option, async (response) => {
             if (response.assets && response.assets.length > 0) {
                 const uri = response.assets[0].uri;
                 setProfileImage(uri);
-    
+
                 dispatch(setProfileImage(uri)); // Dispatch an action to update the profileImage property
                 setProfileImage(uri);
             }
         })
     }
-  return (
-//     <SafeAreaView  style={styles.container}>
-     
-//     <View style={styles.arrowcontainer}>
-//         <TouchableOpacity 
-//         style={styles.aerrowbackicon}
-//         onPress={() => navigation.goBack()}
-//         >
-//             <Image resizeMode='CENTER' style={{ width: "100%", height: "100%" }}
-//                 source={Vector} />
-//         </TouchableOpacity>
-//         <Text style={styles.registration}>Profile Registration</Text>
-//     </View>
-//     <View style={styles.procontainer}>
-//     <View style={styles.profileimage}>
-//         <Image resizeMode='cover' style={{width:"1005",height:"100%"}} source={profileimage}/>
-//     </View>
-//     <View style={styles.editprofilebutton}>
-// <FontAwesome5 resizeMode="center" name="edit" color="#fff"/>
-//     </View>
-    
-// </View>
+    return (
+        //     <SafeAreaView  style={styles.container}>
 
-// <InputText placeholder="Name"/>
-// <InputText placeholder="Address"/>
-// <InputText placeholder="Email Address"/>
-// <InputText placeholder="Mobile Number"/>
-// <InputText placeholder="Security License Number"/>
+        //     <View style={styles.arrowcontainer}>
+        //         <TouchableOpacity 
+        //         style={styles.aerrowbackicon}
+        //         onPress={() => navigation.goBack()}
+        //         >
+        //             <Image resizeMode='CENTER' style={{ width: "100%", height: "100%" }}
+        //                 source={Vector} />
+        //         </TouchableOpacity>
+        //         <Text style={styles.registration}>Profile Registration</Text>
+        //     </View>
+        //     <View style={styles.procontainer}>
+        //     <View style={styles.profileimage}>
+        //         <Image resizeMode='cover' style={{width:"1005",height:"100%"}} source={profileimage}/>
+        //     </View>
+        //     <View style={styles.editprofilebutton}>
+        // <FontAwesome5 resizeMode="center" name="edit" color="#fff"/>
+        //     </View>
 
-// <View style={styles.btcontainer}>
-//     <Button fill={true} name="Register" onPress={()=>{navigation.navigate('IndividualsuccessCompnyregister')}}  />
-// </View>
+        // </View>
 
-         
-//     </SafeAreaView>
-<SafeAreaView  style={styles.container}>
-     
-<View style={styles.arrowcontainer}>
-    <TouchableOpacity 
-    style={styles.aerrowbackicon}
-    onPress={() => navigation.goBack()}
-    >   
-        <Image resizeMode='CENTER' style={{ width: "100%", height: "100%" }}
-            source={Vector} />
-    </TouchableOpacity>
-    <Text style={styles.registration}>Profile Registration</Text>
-</View>
-<View style={styles.procontainer}>
-<View style={styles.profileimage}>
-{profileImage ? (
-<View>
-      <Image source={{ uri: profileImage }} style={{width:"100%",height:"100%",resizeMode:"cover",}} />
-</View>
-    ):(
-        <View style={styles.proplaceholder}></View>
-    ) }
-</View>
-<TouchableOpacity style={styles.editprofilebutton}  onPress={() => profilepicker ()} >
-<FontAwesome5 resizeMode="center" name="edit" color="#fff"/>
-</TouchableOpacity>
+        // <InputText placeholder="Name"/>
+        // <InputText placeholder="Address"/>
+        // <InputText placeholder="Email Address"/>
+        // <InputText placeholder="Mobile Number"/>
+        // <InputText placeholder="Security License Number"/>
 
-</View>
+        // <View style={styles.btcontainer}>
+        //     <Button fill={true} name="Register" onPress={()=>{navigation.navigate('IndividualsuccessCompnyregister')}}  />
+        // </View>
 
-<View>     
-<InputText
-            placeholder="Name"
-            value={name}
-            onChangeText={(text) => setName(text)}
-        />
-        <Text style={styles.errorText}>{nameError}</Text>
 
-        <InputText
-            placeholder="Address"
-            value={address}
-            onChangeText={(text) => setAddress(text)}
-        />
-        <Text style={styles.errorText}>{addressError}</Text>
+        //     </SafeAreaView>
+        <SafeAreaView style={styles.container}>
 
-        <InputText
-            placeholder="Email Address"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-        />
-        <Text style={styles.errorText}>{emailError}</Text>
+            <View style={styles.arrowcontainer}>
+                <TouchableOpacity
+                    style={styles.aerrowbackicon}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Image resizeMode='CENTER' style={{ width: "100%", height: "100%" }}
+                        source={Vector} />
+                </TouchableOpacity>
+                <Text style={styles.registration}>Profile Registration</Text>
+            </View>
+            <View style={styles.procontainer}>
+                <View style={styles.profileimage}>
+                    {profileImage ? (
+                        <View>
+                            <Image source={{ uri: profileImage }} style={{ width: "100%", height: "100%", resizeMode: "cover", }} />
+                        </View>
+                    ) : (
+                        <View style={styles.proplaceholder}></View>
+                    )}
+                </View>
+                <TouchableOpacity style={styles.editprofilebutton} onPress={() => profilepicker()} >
+                    <FontAwesome5 resizeMode="center" name="edit" color="#fff" />
+                </TouchableOpacity>
 
-        <InputText
-            placeholder="Mobile Number"
-            keyboardType='numeric'
-            value={num}
-            onChangeText={(text) => setNum(text)}
-        />
-        <Text style={styles.errorText}>{numError}</Text>
-
-        <InputText
-            placeholder="Security License Number"
-            keyboardType='numeric'
-            value={licnum}
-            onChangeText={(text) => setLicnum(text)}
-        />
-        <Text style={styles.errorText}>{licnumError}</Text>
-        </View>
-     
-        <View style={styles.btcontainer}>
-            <Button fill={true} name="Register" onPress={handleRegister} />
             </View>
 
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={{paddingHorizontal: width * 0.04}}> 
+                <InputText
+                    placeholder="Name"
+                    value={name}
+                    onChangeText={(text) => setName(text)}
+                />
+                <Text style={styles.errorText}>{nameError}</Text>
 
-     
-</SafeAreaView>
-  )
+                <InputText
+                    placeholder="Address"
+                    value={address}
+                    onChangeText={(text) => setAddress(text)}
+                />
+                <Text style={styles.errorText}>{addressError}</Text>
+
+                <InputText
+                    placeholder="Email Address"
+                    value={email}
+                    onChangeText={(text) => setEmail(text)}
+                />
+                <Text style={styles.errorText}>{emailError}</Text>
+
+                <InputText
+                    placeholder="Mobile Number"
+                    keyboardType='numeric'
+                    value={num}
+                    onChangeText={(text) => setNum(text)}
+                />
+                <Text style={styles.errorText}>{numError}</Text>
+
+                <InputText
+                    placeholder="Security License Number"
+                    keyboardType='numeric'
+                    value={licnum}
+                    onChangeText={(text) => setLicnum(text)}
+                />
+                <Text style={styles.errorText}>{licnumError}</Text>
+                </View>
+
+            <View style={styles.btcontainer}>
+                <Button fill={true} name="Register" onPress={handleRegister} />
+            </View>
+            </ScrollView>
+
+
+
+        </SafeAreaView>
+    )
 }
 
 export default IndividualProfileregistry
@@ -209,7 +211,7 @@ export default IndividualProfileregistry
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-      paddingHorizontal:width*0.04
+        paddingHorizontal: width * 0.04
 
 
     },
@@ -222,58 +224,58 @@ const styles = StyleSheet.create({
         // width: width * 0.08,
         // height: height * 0.06,
         paddingHorizontal: width * 0.03,
-        flexDirection:"row",
-        alignItems:"center"
+        flexDirection: "row",
+        alignItems: "center"
     },
-    registration:{
-        marginHorizontal:width*0.19,
+    registration: {
+        marginHorizontal: width * 0.19,
         color: "#1C75BC",
         fontfamily: "poppins",
         fontWeight: "500",
         fontSize: calculateFontSize(20),
     },
-    profileimage:{
-        width:width*0.32,
-        height:height*0.15,
-        overflow:"hidden",
-        borderRadius:100,
+    profileimage: {
+        width: width * 0.32,
+        height: height * 0.15,
+        overflow: "hidden",
+        borderRadius: 100,
         ...Platform.select({
             ios: {
-                width:width*0.32,
-                height:height*0.18,
-                overflow:"hidden",
-                borderRadius:100,
+                width: width * 0.32,
+                height: height * 0.15,
+                overflow: "hidden",
+                borderRadius: 100,
 
             },
         },),
     },
-    procontainer:{
-        marginTop:height*0.07,
-        justifyContent:"center",
-        alignItems:"center",
+    procontainer: {
+        marginTop: height * 0.07,
+        justifyContent: "center",
+        alignItems: "center",
 
     },
-    editprofilebutton:{
+    editprofilebutton: {
 
-        width:width*0.05,
-        height:height*0.03,
-        backgroundColor:"#1C75BC",
+        width: width * 0.05,
+        height: height * 0.03,
+        backgroundColor: "#1C75BC",
         // overflow:"hidden",
-        justifyContent:"center",
-        alignItems:"center",
-        borderRadius:5,
-        bottom:height*0.03,
-        left:width*0.08,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 5,
+        bottom: height * 0.03,
+        left: width * 0.08,
     },
-    btcontainer:{
-        // bottom:height*0.02,
-        justifyContent:"center",
-        alignItems:"center"
+    btcontainer: {
+        bottom:height*0.01,
+        justifyContent: "center",
+        alignItems: "center"
     },
     errorText: {
         color: 'red',
         fontSize: calculateFontSize(12),
-        paddingHorizontal:width*0.02,
+        paddingHorizontal: width * 0.02,
         // marginTop: height*0.01,
     },
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, FlatList, Platform } from 'react-native';
 const { width, height } = Dimensions.get("window");
 import { calculateFontSize } from '../../Utilites/font';
 import { InputWithLeftIcon } from '../../Components';
@@ -66,14 +66,14 @@ const chatData = [
 ];
 
 
-const Companymessagescreen = ({navigation}) => {
+const Companymessagescreen = ({ navigation }) => {
 
 
 
 
   const renderChatItem = ({ item }) => (
     <TouchableOpacity style={styles.chatbox}
-    onPress={() => navigation.navigate('chatroom', { senderName: item.senderName })}
+      onPress={() => navigation.navigate('chatroom', { senderName: item.senderName })}
     >
       <View style={styles.chatroomboxcontaint}>
         <View style={styles.recprofile}>
@@ -81,7 +81,6 @@ const Companymessagescreen = ({navigation}) => {
         </View>
         <View>
           <Text style={styles.recruname}>{item.senderName}</Text>
-          {/* <Text style={styles.lastMessage}>{item.lastMessage}</Text> */}
         </View>
       </View>
       <View>
@@ -131,27 +130,64 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingHorizontal: width * 0.04
+    paddingHorizontal: width * 0.04,
+    ...Platform.select({
+      ios: {
+        flex: 1,
+        backgroundColor: "#fff",
+        paddingHorizontal: width * 0.04,
+      }
+    })
 
   },
   header: {
     paddingVertical: height * 0.04,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    ...Platform.select({
+      ios: {
+        paddingVertical: height * 0.04,
+        justifyContent: "center",
+        alignItems: "center",
+      }
+    })
   },
   myjobstext: {
     color: "#206CB3",
     fontSize: calculateFontSize(15),
     textTransform: "capitalize",
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#206CB3",
+        fontSize: calculateFontSize(15),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+      }
+    })
   },
   recprofile: {
-    width: width * 0.2,
-    height: height * 0.09
+    width: width * 0.11,
+    height: height * 0.06,
+    borderRadius: 100,
+    ...Platform.select({
+      ios: {
+        width: width * 0.11,
+        height: height * 0.06,
+        overflow: "hidden",
+        borderRadius: 20
+      }
+    })
   },
   chatroomboxcontaint: {
     flexDirection: "row",
     alignItems: "center",
+    ...Platform.select({
+      ios: {
+        flexDirection: "row",
+        alignItems: "center",
+      }
+    })
 
   },
   chatbox: {
@@ -161,16 +197,39 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingBottom: height * 0.03,
     borderBottomColor: "#CACACA",
-    marginVertical:height*0.01,
+    marginVertical: height * 0.01,
+    ...Platform.select({
+      ios: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderBottomWidth: 1,
+        paddingBottom: height * 0.001,
+        borderBottomColor: "#CACACA",
+        marginVertical: height * 0.001,
+      }
+    })
   },
   messgecounter: {
     backgroundColor: "#206CB3",
     alignSelf: "center",
     paddingVertical: height * 0.002,
-    paddingHorizontal: width * 0.019,
+    paddingHorizontal: width * 0.014,
     borderRadius: 100,
     color: "#fff",
     marginVertical: height * 0.02,
+    ...Platform.select({
+      ios: {
+        backgroundColor: "#206CB3",
+        alignSelf: "center",
+        paddingVertical: height * 0.002,
+        paddingHorizontal: width * 0.014,
+        borderRadius: 10,
+        overflow: "hidden",
+        color: "#fff",
+        marginVertical: height * 0.02,
+      }
+    })
   },
   time: {
     color: "#515151",
@@ -178,7 +237,17 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     fontFamily: "Poppins",
     marginLeft: width * 0.03,
-    alignSelf: "center"
+    alignSelf: "center",
+    ...Platform.select({
+      ios: {
+        color: "#515151",
+        fontSize: calculateFontSize(12),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+        marginLeft: width * 0.03,
+        alignSelf: "center",
+      }
+    })
   },
   recruname: {
     color: "#515151",
@@ -186,5 +255,14 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     fontFamily: "Poppins",
     marginLeft: width * 0.03,
+    ...Platform.select({
+      ios: {
+        color: "#515151",
+        fontSize: calculateFontSize(15),
+        textTransform: "capitalize",
+        fontFamily: "Poppins",
+        marginLeft: width * 0.03,
+      }
+    })
   }
 })

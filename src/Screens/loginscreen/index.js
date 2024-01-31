@@ -22,8 +22,14 @@ import axios from 'axios';
 
 import {connect, useDispatch, useSelector} from 'react-redux';
 import {setLoginToken} from '../../store/Action';
+import { useNavigation } from '@react-navigation/native';
+import { baseUrl } from '../../Utilites';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { tokens } from 'react-native-paper/lib/typescript/styles/themes/v3/tokens';
 
-const LoginScreen = ({navigation, onLogin}) => {
+
+const LoginScreen = ({onLogin}) => {
+  const navigation = useNavigation()
   const dispatch = useDispatch();
   const authToken = useSelector(state => state.logiToken); // Assuming 'authToken' is the key in your Redux state where the token is stored
   console.log('logintoken Token :', authToken);
@@ -81,7 +87,8 @@ const LoginScreen = ({navigation, onLogin}) => {
     }
   };
 
- 
+
+
   const handleLogin = async () => {
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
@@ -96,7 +103,7 @@ const LoginScreen = ({navigation, onLogin}) => {
 
       const config = {
         method: 'post',
-        url: 'https://45be-58-65-211-93.ngrok-free.app/api/v1/safeguard/auth/login',
+        url: `${baseUrl}/auth/login`,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -105,11 +112,20 @@ const LoginScreen = ({navigation, onLogin}) => {
 
       try {
         const response = await axios(config);
-        console.log('Login successful:', response);
+        // console.log('Login successful:', response);
+        console.log('Login successful:', response.data.token);
         dispatch(setLoginToken(response.data.token));
+        await AsyncStorage.setItem('auth_token', response.data.token);
+        console.log("Token stored in AsyncStorage:", response.data.token);
+
+        
+
+    
+      
         onLogin();
         // navigation.navigate('selectprofile');
         // ...
+
       } catch (error) {
         console.log('login error:',error.response.data.error);
         setRegistrationError(error.response.data.error);
@@ -129,8 +145,10 @@ const LoginScreen = ({navigation, onLogin}) => {
     setRegistrationTriggered(false);
   }, [registrationTriggered]);
   const handleRegisterButtonPress = () => {
-    // Set the trigger state to true when the button is pressed
+
     setRegistrationTriggered(true);
+    // navigation.navigate('selectprofile')
+   
   };
   const onChangeText = email => {
     setEmail(email);
@@ -221,6 +239,8 @@ const LoginScreen = ({navigation, onLogin}) => {
           fill={true}
           name={'login'}
           onPress={handleRegisterButtonPress}
+          // onPress={()=>navigation.navigate('usersignup')}
+        
         />
       </View>
       <View style={styles.lowertext}>
@@ -358,7 +378,7 @@ const styles = StyleSheet.create({
     marginRight: width * 0.02,
     ...Platform.select({
       ios: {
-        width: width * 0.09,
+        width: width * 0.07,
         height: height * 0.04,
         marginRight: width * 0.02,
       },

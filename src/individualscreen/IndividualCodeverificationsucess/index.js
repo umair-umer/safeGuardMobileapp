@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet, Dimensions, TextInput, FlatList, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, TextInput, FlatList, TouchableOpacity, SafeAreaView, Image, Platform } from 'react-native';
 const { width, height } = Dimensions.get("window");
 import IMG from '../../Assests/sucss.png'
 import { Button } from '../../Components';
@@ -7,10 +7,10 @@ import { calculateFontSize } from '../../Utilites/font';
 function IndividualCodeverifiedscreen({ navigation }) {
   return (
 
-   
+
     <SafeAreaView style={styles.miancon} >
 
-{/* <View style={{paddingHorizontal:width*0.01}}>
+      {/* <View style={{paddingHorizontal:width*0.01}}>
 <ArrowBack/>
 </View> */}
 
@@ -19,7 +19,7 @@ function IndividualCodeverifiedscreen({ navigation }) {
           <Image
             source={IMG}
             style={{ width: "100%", height: "100%" }}
-            
+
           />
 
         </View>
@@ -30,9 +30,9 @@ function IndividualCodeverifiedscreen({ navigation }) {
       </View>
 
 
-<View style={{alignItems:"center"}}>
-<Button fill={true} name={"Start Posting job"} onPress={() => navigation.navigate('individualJobcategeory')} />
-  </View>   
+      <View style={{ alignItems: "center" }}>
+        <Button fill={true} name={"Start Posting job"} onPress={() => navigation.navigate('individualJobcategeory')} />
+      </View>
 
     </SafeAreaView>
 
@@ -47,17 +47,31 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: width * 0.06,
     backgroundColor: "#fff",
-    paddingBottom:height*0.04,
+    paddingBottom: height * 0.04,
+    ...Platform.select({
+      ios: {
+        flex: 1,
+        paddingHorizontal: width * 0.06,
+        backgroundColor: "#fff",
+        paddingBottom: height * 0.04,
+      }
+    })
 
   },
   imgcon: {
 
     width: width * 0.2,
     height: height * 0.10,
+    ...Platform.select({
+      ios: {
+        width: width * 0.2,
+        height: height * 0.09,
+      }
+    })
 
   },
   headcon: {
-    flex:1,
+    flex: 1,
     paddingVertical: height * 0.05
 
   },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, FlatList } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView, FlatList, Platform } from 'react-native';
 const { width, height } = Dimensions.get("window");
 import { calculateFontSize } from '../../Utilites/font';
 import security from '../../Assests/security.png';
@@ -48,54 +48,57 @@ const CompanymyjobsScreen = () => {
         <Text style={styles.myjobstext}>My Jobs</Text>
       </View>
       <View style={styles.activejobsview}>
-        <Text style={styles.activejobtext}>2 Active Jobs</Text><Text style={styles.postjobs}>Post new job</Text>
+        <Text style={styles.activejobtext}>2 Active Jobs</Text>
+        <TouchableOpacity style={styles.postjobs}>
+          <Text style={{color:"white"}}>Post new job</Text>
+        </TouchableOpacity>
       </View>
 
 
-   <View style={{paddingHorizontal:width*0.02,}}>
-   <FlatList
-      data={suggestedJobsData}
-      renderItem={({ item }) => (
-        <View style={styles.sugestboxjob}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <View style={styles.dpPic}>
-                <Image resizeMode='center' source={armedsecurity} style={styles.img} />
+      <View style={{ paddingHorizontal: width * 0.02, }}>
+        <FlatList
+          data={suggestedJobsData}
+          renderItem={({ item }) => (
+            <View style={styles.sugestboxjob}>
+              <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View style={styles.dpPic}>
+                    <Image resizeMode='center' source={armedsecurity} style={styles.img} />
+                  </View>
+                  <View style={{ marginLeft: width * 0.04 }}>
+                    <Text style={styles.sugestjobtext}>{item.title}</Text>
+                    <Text style={styles.sugestsubtext}>{item.company}</Text>
+                  </View>
+                </View>
               </View>
-              <View style={{ marginLeft: width * 0.04 }}>
-                <Text style={styles.sugestjobtext}>{item.title}</Text>
-                <Text style={styles.sugestsubtext}>{item.company}</Text>
+              <View style={styles.btcontainer}>
+                <View style={styles.jobtiming}>
+                  <Text style={styles.textjobtiming}>{item.jobTime}</Text>
+                </View>
+                <View style={styles.jobtiming}>
+                  <Text style={styles.textjobtiming}>{item.armed}</Text>
+                </View>
+                <View style={styles.jobtiming}>
+                  <Text style={styles.textjobtiming}>{item.location}</Text>
+                </View>
+              </View>
+              <View style={styles.flexlocationsugestjob}>
+                <Text style={styles.locationtext}>
+                  <EvilIcons size={15} name={"location"} />
+                  {item.locationjob}
+                </Text>
+                <Text style={styles.locationtext}>{item.salary}</Text>
               </View>
             </View>
-          </View>
-          <View style={styles.btcontainer}>
-            <View style={styles.jobtiming}>
-              <Text style={styles.textjobtiming}>{item.jobTime}</Text>
-            </View>
-            <View style={styles.jobtiming}>
-              <Text style={styles.textjobtiming}>{item.armed}</Text>
-            </View>
-            <View style={styles.jobtiming}>
-              <Text style={styles.textjobtiming}>{item.location}</Text>
-            </View>
-          </View>
-          <View style={styles.flexlocationsugestjob}>
-            <Text style={styles.locationtext}>
-              <EvilIcons size={15} name={"location"} />
-              {item.locationjob}
-            </Text>
-            <Text style={styles.locationtext}>{item.salary}</Text>
-          </View>
-        </View>
-      )}
-      keyExtractor={(item) => item.id}
-    />
-   </View>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
 
 
 
 
-     
+
 
     </SafeAreaView>
   )
@@ -105,22 +108,40 @@ export default CompanymyjobsScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#fff",
-    paddingHorizontal: width * 0.04
+    paddingHorizontal: width * 0.04,
+    ...Platform.select({
+      ios: {
+        flex: 1,
+        paddingHorizontal: width * 0.04,
+      }
+    })
 
   },
   header: {
     paddingVertical: height * 0.04,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    ...Platform.select({
+      ios: {
+        paddingVertical: height * 0.04,
+        justifyContent: "center",
+        alignItems: "center",
+      }
+    })
   },
   myjobstext: {
     color: "#206CB3",
     fontSize: calculateFontSize(15),
-
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#206CB3",
+        fontSize: calculateFontSize(15),
+        fontFamily: "Poppins",
+      }
+    })
   },
-  
+
   sugestboxjob: {
     backgroundColor: "#fff",
     paddingHorizontal: width * 0.02,
@@ -134,8 +155,24 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
-    
     elevation: 4,
+    ...Platform.select({
+      ios: {
+        backgroundColor: "#fff",
+        paddingHorizontal: width * 0.02,
+        paddingVertical: height * 0.02,
+        borderRadius: 10,
+        marginVertical: height * 0.02,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+      }
+    })
   },
   dpPic: {
 
@@ -145,79 +182,201 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    padding:2,
+    padding: 2,
+    ...Platform.select({
+      ios: {
+        width: width * 0.13,
+        height: height * 0.06,
+        backgroundColor: "#F3F3F3",
+        borderRadius: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 2,
+      }
+    })
 
   },
   img: {
     width: "100%",
     height: "100%",
+    ...Platform.select({
+      ios: {
+        width: "100%",
+        height: "100%",
+      }
+    })
   },
   sugestjobtext: {
     color: "#000",
     fontSize: calculateFontSize(16),
     fontWeight: "500",
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#000",
+        fontSize: calculateFontSize(16),
+        fontWeight: "500",
+        fontFamily: "Poppins",
+      }
+    })
   },
-  sugestsubtext:{
+  sugestsubtext: {
     color: "#000",
     fontSize: calculateFontSize(10),
     fontWeight: "500",
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#000",
+        fontSize: calculateFontSize(10),
+        fontWeight: "500",
+        fontFamily: "Poppins",
+      }
+    })
   },
   savedicon: {
     width: width * 0.06,
     height: height * 0.04,
+    ...Platform.select({
+      ios: {
+        width: width * 0.06,
+        height: height * 0.04,
+      }
+    })
   },
   btcontainer: {
-    flexDirection: "row", alignItems: "center", marginVertical: height * 0.02,
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: height * 0.02,
+    ...Platform.select({
+      ios: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginVertical: height * 0.02,
+      }
+    })
   },
   jobtiming: {
     backgroundColor: "#1C75BC",
     padding: 10,
     borderRadius: 5,
     marginLeft: width * 0.03,
+    ...Platform.select({
+      ios: {
+        backgroundColor: "#1C75BC",
+        padding: 10,
+        borderRadius: 5,
+        marginLeft: width * 0.03,
+      }
+    })
   },
   textjobtiming: {
     color: "#fff",
     fontSize: calculateFontSize(10),
-
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#fff",
+        fontSize: calculateFontSize(10),
+        fontFamily: "Poppins",
+      }
+    })
   },
   flexlocationsugestjob: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    ...Platform.select({
+      ios: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+      }
+    })
   },
   locationtext: {
     color: "#000",
     fontSize: calculateFontSize(15),
-
-    fontFamily: "Poppins"
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios: {
+        color: "#000",
+        fontSize: calculateFontSize(15),
+        fontFamily: "Poppins",
+      }
+    })
   },
   activebottomeborder: {
-    width: width * 0.15, borderBottomWidth: 4, left: width * 0.01, borderBottomColor: "#206CB3", top: height * 0.03
+    width: width * 0.15,
+    borderBottomWidth: 4,
+    left: width * 0.01,
+    borderBottomColor: "#206CB3",
+    top: height * 0.03,
+    ...Platform.select({
+      ios: {
+        width: width * 0.15,
+        borderBottomWidth: 4,
+        left: width * 0.01,
+        borderBottomColor: "#206CB3",
+        top: height * 0.03,
+      }
+    })
   },
   activebottomebordernone: {
-    width: width * 0.11, bottom: height * 0.003
+    width: width * 0.11,
+    bottom: height * 0.003,
+    ...Platform.select({
+      ios: {
+        width: width * 0.11,
+        bottom: height * 0.003,
+      }
+    })
   },
-  activejobtext:{
+  activejobtext: {
     color: "#8D8D8D",
     fontSize: calculateFontSize(20),
-  fontWeight:"500",
-    fontFamily: "Poppins"
+    fontWeight: "500",
+    fontFamily: "Poppins",
+    ...Platform.select({
+      ios:{
+        color: "#8D8D8D",
+        fontSize: calculateFontSize(20),
+        fontWeight: "500",
+        fontFamily: "Poppins",
+      }
+    })
   },
-  postjobs:{
+  postjobs: {
     color: "#fff",
     fontSize: calculateFontSize(15),
-  fontWeight:"500",
+    fontWeight: "500",
     fontFamily: "Poppins",
-    backgroundColor:"#0057A8",
-    padding:10,
-    borderRadius:10
+    backgroundColor: "#0057A8",
+    padding: 10,
+    borderRadius: 10,
+    ...Platform.select({
+      ios:{
+        color: "#fff",
+        fontSize: calculateFontSize(15),
+        fontWeight: "500",
+        fontFamily: "Poppins",
+        backgroundColor: "#0057A8",
+        padding: 10,
+        borderRadius: 10,
+      }
+    })
   },
-  activejobsview:{
-    flexDirection:"row",
-    justifyContent:"space-between",
-    alignItems:"center"
+  activejobsview: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal:width * 0.04,
+    ...Platform.select({
+      ios:{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal:width * 0.04,
+      }
+    })
   }
 
 })

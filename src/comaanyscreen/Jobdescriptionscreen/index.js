@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
+  Platform
 } from 'react-native';
 const {width, height} = Dimensions.get('window');
 import {calculateFontSize} from '../../Utilites/font';
@@ -61,20 +62,45 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     paddingHorizontal: width * 0.04,
+    ...Platform.select({
+      ios:{
+        flex: 1,
+        backgroundColor: '#fff',
+        justifyContent: 'center',
+        paddingHorizontal: width * 0.04,
+      }
+    })
   },
-
+  inpcon:{
+    paddingHorizontal:width * 0.01
+  },
   heading: {
     // marginHorizontal: width * 0.03,
     paddingHorizontal: width * 0.02,
     color: '#1C75BC',
     fontSize: calculateFontSize(35),
     fontWeight: '600',
+    ...Platform.select({
+    paddingHorizontal: width * 0.02,
+    color: '#1C75BC',
+    fontSize: calculateFontSize(35),
+    fontWeight: '600',
+    })
   },
   btncon: {
     height: height * 0.45,
     flexDirection: 'column',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    ...Platform.select({
+
+      ios:{
+        height: height * 0.45,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+      }
+    })
   },
 
   btn: {
@@ -84,23 +110,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
-    // marginVertical: height * 0.02,
+    ...Platform.select({
+      ios:{
+        width: width * 0.9,
+        height: height * 0.07,
+        backgroundColor: '#1C75BC',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+      }
+    })
   },
   btntx: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: calculateFontSize(16),
     fontWeight: '500',
-  },
-  inpcon: {
-    // paddingHorizontal: width * 0.04,
   },
   inp: {
     borderColor: '#1C75BC',
     borderWidth: 1,
     paddingHorizontal: width * 0.06,
+    paddingVertical: height * 0.015,
     borderRadius: 10,
     marginVertical: height * 0.01,
     color: '#000',
+    ...Platform.select({
+      borderColor: '#1C75BC',
+    borderWidth: 1,
+    paddingHorizontal: width * 0.06,
+    paddingVertical: height * 0.015,
+    // borderRadius: 10,
+    marginVertical: height * 0.01,
+    color: '#000',
+    })
   },
   inp1: {
     borderColor: '#1C75BC',
@@ -110,6 +152,17 @@ const styles = StyleSheet.create({
     paddingBottom: height * 0.15,
     borderRadius: 10,
     color: '#000',
+    ...Platform.select({
+      ios:{
+        borderColor: '#1C75BC',
+        borderWidth: 1,
+        height: height * 0.2,
+        paddingHorizontal: width * 0.06,
+        paddingBottom: height * 0.15,
+        borderRadius: 10,
+        color: '#000',
+      }
+    })
   },
 });
 

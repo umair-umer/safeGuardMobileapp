@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet, Dimensions, TextInput, FlatList, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, SafeAreaView, Image , Platform} from 'react-native';
 const { width, height } = Dimensions.get("window");
 import IMG from '../../Assests/sucss.png'
 import { Button } from '../../Components';
@@ -48,33 +48,59 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.06,
     backgroundColor: "#fff",
     paddingBottom:height*0.04,
+    ...Platform.select({
+      flex: 1,
+      paddingHorizontal: width * 0.06,
+      backgroundColor: "#fff",
+      paddingBottom:height*0.04,
+    })
 
   },
   imgcon: {
 
     width: width * 0.2,
     height: height * 0.10,
+    ...Platform.select({
+      width: width * 0.2,
+    height: height * 0.10,
+    })
 
   },
   headcon: {
-flex:1,
-    paddingVertical: height * 0.05
+    flex:1,
+    paddingVertical: height * 0.05,
+    ...Platform.select({
+      flex:1,
+    paddingVertical: height * 0.05,
+    })
 
   },
   heading: {
-
-
     color: "#1C75BC",
     fontSize: calculateFontSize(25),
     fontWeight: "700",
-    textAlign: "center"
+    textAlign: "center",
+    ...Platform.select({
+
+      color: "#1C75BC",
+      fontSize: calculateFontSize(25),
+      fontWeight: "700",
+      textAlign: "center",
+    })
   },
   salogan: {
 
     color: "#939393",
-    fontSize: 14,
+    fontSize: calculateFontSize(14),
     fontWeight: "500",
-    textAlign: "center"
+    textAlign: "center",
+    ...Platform.select({
+
+      color: "#939393",
+    fontSize: calculateFontSize(10),
+    fontWeight: "500",
+    textAlign: "center",
+    })
 
   },
   btncon: {

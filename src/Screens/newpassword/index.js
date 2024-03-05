@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Dimensions,
   Image,
@@ -7,85 +7,103 @@ import {
   TouchableOpacity,
   View,
   SafeAreaView,
-  TextInput,
+  BackHandler,
 } from 'react-native';
 const {width, height} = Dimensions.get('window');
 import Vector from '../../Assests/Vector.png';
-import mess from '../../Assests/mess.png';
-import email from '../../Assests/email.png';
 import {Button, InputText, Resgistrationsuccesmodal} from '../../Components';
-import {calculateFontSize} from '../../Utilites/font';
-import {NavigationContainer} from '@react-navigation/native';
-import axios from 'axios';
+import {
+  PoppinsBold,
+  PoppinsRegular,
+  calculateFontSize,
+} from '../../Utilites/font';
 import Loader from '../../Components/Loader';
-import {connect, useSelector} from 'react-redux';
+import {showMessage} from 'react-native-flash-message';
+import {PostApi, PostApiWithOutToken} from '../../api/helper';
+import {BaseUrl} from '../../api/BaseUrl';
+import {CommonActions} from '@react-navigation/native';
 
 const Newpass = ({navigation, route}) => {
-  const passToken = route.params;
-  console.log(passToken, '===>');
-
+  const userDetails = route.params;
   const [password, setPassword] = useState('');
-  const [token, settoken] = useState(passToken);
   const [newPassword, setNewPassword] = useState('');
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
+  // useEffect(() => {
+  //   const backAction = () => navigation.reset('login');
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible);
-  };
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     backAction,
+  //   );
 
-  const changePassword = async () => {
+  //   return () => backHandler.remove();
+  // }, []);
+
+  console.log(userDetails);
+
+  const handleChangePassword = () => {
     setLoading(true);
-    let data = {
-      password: newPassword,
-    };
-    const tokenValue = passToken.token;
-    let config = {
-      method: 'put',
-      maxBodyLength: Infinity,
-      url: `https://45be-58-65-211-93.ngrok-free.app/api/v1/safeguard/auth/resetpassword/${tokenValue}`,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data: data,
-    };
-    console.log(config, '===>config');
-    try {
-      const response = await axios.request(config);
-      console.log(response.data);
+    const formdata = new FormData();
+    formdata.append('otp', userDetails?.otp);
+    formdata.append('newPassword', password);
+    formdata.append('confirmPassword', newPassword);
+    userDetails.email !== null
+      ? formdata.append('email', userDetails?.email)
+      : formdata.append('phone', userDetails?.phone);
 
-      console.log('Password Changed Successfully:', response.data);
-
-      setLoading(false); // Hide loader
-
-      // Show success modal and navigate to login screen
-      toggleModal();
-      setTimeout(() => {
-        // navigation.navigate('login');
-      }, 3000);
-    } catch (error) {
-      console.error('Error changing password:', error);
-      setRegistrationError(error.response.data.message);
-      setLoading(true); // Hide loader
-
-      if (error.response && error.response.data) {
-        console.error('Server Error Details:', error.response.data);
-        setRegistrationError(error.response.data.error);
-        // Set error message from server response
-      } else {
-        setRegistrationError('An unexpected error occurred.'); // Set a generic error message
-      }
+    if (password == newPassword) {
+      PostApiWithOutToken(`${BaseUrl}changePasswordWithOtp`, formdata)
+        .then(res => {
+          console.log('res changePass====>', res.data);
+          if (res.data.success) {
+            setLoading(false);
+            showMessage({
+              animated: true,
+              message: res.data?.message,
+              type: 'success',
+              floating: true,
+              icon: 'success',
+            });
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{name: 'login'}],
+              }),
+            );
+          } else {
+            setLoading(false);
+            showMessage({
+              animated: true,
+              message: res.data?.message,
+              type: 'danger',
+              floating: true,
+              icon: 'danger',
+            });
+          }
+        })
+        .catch(err => {
+          console.log('err changePass====>', err);
+          setLoading(false);
+          showMessage({
+            animated: true,
+            message: err?.response?.data?.message,
+            type: 'danger',
+            floating: true,
+            icon: 'danger',
+          });
+        });
+    } else {
+      setLoading(false);
+      showMessage({
+        animated: true,
+        message: 'Password and confirm password does not match!',
+        type: 'danger',
+        floating: true,
+        icon: 'danger',
+      });
     }
-  };
-  const onChangePassword = password => {
-    console.log(password);
-
-    setPassword(password);
-  };
-  const onChangeNewPassword = newPassword => {
-    console.log(newPassword);
-    setNewPassword(newPassword);
   };
 
   return (
@@ -110,25 +128,27 @@ const Newpass = ({navigation, route}) => {
       </TouchableOpacity>
       <View style={styles.forgotcontainer}>
         <Text style={styles.forgottext}>Enter new password</Text>
-        <Text style={styles.forgottextdetail}>please enter new password</Text>
+        <Text style={styles.forgottextdetail}>
+          Enter your new password to access your account.
+        </Text>
       </View>
 
       <View style={styles.otpcontainer}>
         <InputText
-          onChangeText={onChangePassword}
+          onChangeText={setPassword}
           value={password}
           pass={true}
-          placeholder={'passwword'}
+          placeholder={'New Password'}
         />
         <InputText
-          onChangeText={onChangeNewPassword}
+          onChangeText={setNewPassword}
           value={newPassword}
           pass={true}
-          placeholder={'New passwword'}
+          placeholder={'Confirm Password'}
         />
       </View>
       <View style={styles.btcontainer}>
-        <Button fill={true} name={'Continue'} onPress={changePassword} />
+        <Button fill={true} name={'Continue'} onPress={handleChangePassword} />
       </View>
       <Resgistrationsuccesmodal
         isModalVisible={isModalVisible}
@@ -160,15 +180,14 @@ const styles = StyleSheet.create({
 
   forgottext: {
     color: '#1C75BC',
-    fontfamily: 'poppins',
-    fontWeight: '700',
-    fontSize: calculateFontSize(30),
+    fontFamily: PoppinsBold,
+    fontSize: calculateFontSize(26),
+    textTransform: 'capitalize',
   },
   forgottextdetail: {
     color: '#939393',
-    fontfamily: 'poppins',
-    fontWeight: '400',
-    fontSize: calculateFontSize(13),
+    fontFamily: PoppinsRegular,
+    fontSize: calculateFontSize(12),
   },
   inputcontainer: {
     flexDirection: 'row',
@@ -209,12 +228,11 @@ const styles = StyleSheet.create({
   },
   otpcontainer: {
     flex: 1,
+    marginTop: 40,
   },
   btcontainer: {
     flex: 1,
-    top: height * 0.45,
-    // flexDirection: 'column',
-    // justifyContent:"flex-end",
+    top: height * 0.4,
     alignItems: 'center',
   },
   // input: {

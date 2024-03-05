@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 const {width, height} = Dimensions.get('window');
 import Vector from '../../Assests/Vector.png';
-import email from '../../Assests/email.png';
+import mess from '../../Assests/mess.png';
 import {Button} from '../../Components';
 import {PoppinsRegular, calculateFontSize} from '../../Utilites/font';
 import Loader from '../../Components/Loader';
@@ -19,72 +19,54 @@ import {PostApiWithOutToken} from '../../api/helper';
 import {BaseUrl} from '../../api/BaseUrl';
 import {showMessage} from 'react-native-flash-message';
 
-const Forgotpassword = ({navigation}) => {
-  const [emaill, setEmail] = useState('');
+const ForgotSMS = ({navigation}) => {
+  const [phone, setPhone] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
 
   const handleSubmit = () => {
     setLoading(true);
-    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    const validateEmail = reg.test(emaill);
-    console.log('validate email===>', validateEmail);
-
-    if (validateEmail) {
-      const forgotData = new FormData();
-      forgotData.append('email', validateEmail && emaill);
-      PostApiWithOutToken(`${BaseUrl}forgotPassword`, forgotData)
-        .then(res => {
-          console.log('res forgotPassword====>', res.data);
-          if (res.data?.success) {
-            setLoading(false);
-            showMessage({
-              animated: true,
-              message: res.data.message,
-              type: 'success',
-              floating: true,
-              icon: 'success',
-            });
-            navigation.navigate('otpcode', {
-              email: emaill,
-              otp: res.data?.data,
-              phone: null,
-            });
-          } else {
-            setLoading(false);
-            setRegistrationError(res?.data?.message);
-            showMessage({
-              animated: true,
-              message: res?.data?.message,
-              type: 'danger',
-              floating: true,
-              icon: 'danger',
-            });
-          }
-        })
-        .catch(err => {
-          console.log('catch err forgotPassword====>', err);
-          setRegistrationError(err?.response?.data?.message);
+    const forgotData = new FormData();
+    forgotData.append('phone', phone);
+    PostApiWithOutToken(`${BaseUrl}forgotPassword`, forgotData)
+      .then(res => {
+        console.log('res forgotPassword====>', res.data);
+        if (res.data?.success) {
           setLoading(false);
           showMessage({
             animated: true,
-            message: err?.response?.data?.message,
+            message: res.data.message,
+            type: 'success',
+            floating: true,
+            icon: 'success',
+          });
+          navigation.navigate('otpcode', {
+            phone: phone,
+            email: null,
+            otp: res.data?.data,
+          });
+        } else {
+          setLoading(false);
+          showMessage({
+            animated: true,
+            message: res?.data?.message,
             type: 'danger',
             floating: true,
             icon: 'danger',
           });
+        }
+      })
+      .catch(err => {
+        console.log('catch err forgotPassword====>', err);
+        setLoading(false);
+        showMessage({
+          animated: true,
+          message: err?.response?.data?.message,
+          type: 'danger',
+          floating: true,
+          icon: 'danger',
         });
-    } else {
-      // setRegistrationError(err?.response?.data?.message);
-      setLoading(false);
-      showMessage({
-        animated: true,
-        message: 'Please enter a valid email!',
-        type: 'danger',
-        floating: true,
-        icon: 'danger',
       });
-    }
   };
 
   return (
@@ -117,13 +99,14 @@ const Forgotpassword = ({navigation}) => {
 
       <View style={styles.otpcontainer}>
         <View style={styles.inputcontainer}>
-          <Image source={email} resizeMode="center" style={styles.icon} />
+          <Image source={mess} style={styles.icon} />
           <TextInput
             style={styles.input}
-            placeholder={'Send OTP via Email'}
-            value={emaill}
+            placeholder={'Enter phone number'}
             placeholderTextColor={'gray'}
-            onChangeText={setEmail}
+            resizeMode="center"
+            value={phone}
+            onChangeText={setPhone}
           />
         </View>
       </View>
@@ -139,7 +122,7 @@ const Forgotpassword = ({navigation}) => {
   );
 };
 
-export default Forgotpassword;
+export default ForgotSMS;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-
-import { View, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {
   Forgotpassword,
   Home,
@@ -32,71 +30,31 @@ import {
   Singupscreen,
 } from '../Screens';
 
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import CompanyModule from './CompanyModule';
 import Individualprson from './individualmodule';
-import { useRoute } from '@react-navigation/native';
 import Trainingmodule from './Trainingmodule';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Traininginstittutemodule from './TrainingInstittute';
-import { setLoginToken } from '../store/Action';
-import { useDispatch } from 'react-redux';
-
+import {useSelector} from 'react-redux';
+import ForgotSMS from '../Screens/forgotpassword/ForgotSMS';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const Nav = () => {
-  const dispatch = useDispatch()
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const [isCheckingToken, setIsCheckingToken] = useState(true);
+  const userToken = useSelector(state => state.authReducer.user);
+  const userRole = useSelector(state => state.authReducer.userRole);
 
-  const onLogin = () => {
-    // Logic to handle successful login
-    setLoggedIn(true);
-  };
-  useEffect(() => {
-    checkToken();
-  }, []);
-
-  const checkToken = async () => {
-    try {
-      const storedToken = await AsyncStorage.getItem('auth_token');
-      if (storedToken) {
-        dispatch(setLoginToken(storedToken)); // Assuming you handle the token in your Redux store
-        setLoggedIn(true);
-      }
-      setIsCheckingToken(false); // Token check completed
-    } catch (error) {
-      console.log('Error checking token', error);
-      setIsCheckingToken(false);
-    }
-  };
-
-  if (isCheckingToken) {
-    // Optionally, return a loading screen here
-    return <Text>Loading...</Text>;
-  }
-
-
+  console.log('userRole====>', userRole);
 
   const AuthenticatedStack = () => {
-    // Define your authenticated routes/screens here
     return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* Replace with your actual screens */}
-        <Stack.Screen name="selectprofiles" component={Selectprofile} />
-        <Stack.Screen
-          name="selectcategories"
-          component={SelectprofileCategeory}
-        />
-        <Stack.Screen
-          name="profileregiter"
-          component={ProfileRegistraion}
-        />
+      <Stack.Navigator
+        initialRouteName="bottomtab"
+        screenOptions={{headerShown: false}}>
         <Stack.Screen name="bottomtab" component={MyTabs} />
         <Stack.Screen name="sugestjobscreen" component={SugestedJob} />
         <Stack.Screen name="jobdetail" component={JobDetail} />
@@ -108,8 +66,37 @@ const Nav = () => {
         <Stack.Screen name="chatroom" component={ChatRoom} />
         <Stack.Screen name="editprofile" component={EditProfile} />
         <Stack.Screen name="addskill" component={Addskillscreen} />
-        {/* <Stack.Screen name="bottomtab" component={MyTabs} /> */}
         <Stack.Screen name="workedit" component={Editworkexpscreen} />
+      </Stack.Navigator>
+    );
+  };
+
+  const UnauthenticatedStack = () => {
+    return (
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name="intro" component={IntroDuctionSlider} />
+        <Stack.Screen name="wellcome" component={Wellcome} />
+        <Stack.Screen name="login" component={LoginScreen} />
+        <Stack.Screen name="forgotpass" component={Forgotpassword} />
+        <Stack.Screen name="forgotSMS" component={ForgotSMS} />
+        <Stack.Screen name="otpcode" component={OtpScreen} />
+        <Stack.Screen name="newpass" component={Newpass} />
+        <Stack.Screen name="usersignup" component={Singupscreen} />
+      </Stack.Navigator>
+    );
+  };
+
+  const RegisterStack = () => {
+    return (
+      <Stack.Navigator
+        initialRouteName="selectprofiles"
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="selectprofiles" component={Selectprofile} />
+        <Stack.Screen
+          name="selectcategories"
+          component={SelectprofileCategeory}
+        />
+        <Stack.Screen name="profileregiter" component={ProfileRegistraion} />
         <Stack.Screen name="Securitycompnay" component={CompanyModule} />
         <Stack.Screen name="Individualmoduel" component={Individualprson} />
         <Stack.Screen name="Trainingmodule" component={Trainingmodule} />
@@ -121,33 +108,14 @@ const Nav = () => {
     );
   };
 
-  const UnauthenticatedStack = ({ onLogin }) => {
-
-    return (
-      <Stack.Navigator>
-     
-        <Stack.Screen name="intro" component={IntroDuctionSlider} />
-        <Stack.Screen name="wellcome" component={Wellcome} />
-        <Stack.Screen name="login">
-          {props => <LoginScreen {...props} onLogin={onLogin} />}
-        </Stack.Screen>
-
-        <Stack.Screen name="forgotpass" component={Forgotpassword} />
-        <Stack.Screen name="otpcode" component={OtpScreen} />
-        <Stack.Screen name="newpass" component={Newpass} />
-
-        <Stack.Screen name="usersignup" component={Singupscreen} />
- 
-      </Stack.Navigator>
-    );
-  };
-
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
-        <AuthenticatedStack />
+      {!userToken.token ? (
+        <UnauthenticatedStack />
+      ) : userRole ? (
+        <RegisterStack />
       ) : (
-        <UnauthenticatedStack onLogin={() => setLoggedIn(true)} />
+        <AuthenticatedStack />
       )}
     </NavigationContainer>
   );
@@ -167,7 +135,7 @@ function MyTabs() {
         name="home"
         component={Home}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons name="home" size={size} color={color} />
           ),
         }}
@@ -176,7 +144,7 @@ function MyTabs() {
         name="saved"
         component={SavedJobScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="briefcase"
               size={size}
@@ -189,7 +157,7 @@ function MyTabs() {
         name="My Jobs"
         component={MyjobsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({color, size}) => (
             <Ionicons name="briefcase-outline" size={size} color={color} />
           ),
         }}
@@ -198,7 +166,7 @@ function MyTabs() {
         name="Message"
         component={Messagesscreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({color, size}) => (
             <AntDesign name="message1" size={size} color={color} />
           ),
         }}
@@ -207,7 +175,7 @@ function MyTabs() {
         name="Profile"
         component={Profilescreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="briefcase"
               size={size}

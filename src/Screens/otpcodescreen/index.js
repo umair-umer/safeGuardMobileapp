@@ -14,7 +14,11 @@ import Vector from '../../Assests/Vector.png';
 import mess from '../../Assests/mess.png';
 import email from '../../Assests/email.png';
 import {Button, InputText} from '../../Components';
-import {calculateFontSize} from '../../Utilites/font';
+import {
+  PoppinsBold,
+  PoppinsRegular,
+  calculateFontSize,
+} from '../../Utilites/font';
 import {NavigationContainer} from '@react-navigation/native';
 import {
   CodeField,
@@ -22,21 +26,16 @@ import {
   useBlurOnFulfill,
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
-import {connect, useSelector} from 'react-redux';
 
 import axios from 'axios';
 import Loader from '../../Components/Loader';
+import {showMessage} from 'react-native-flash-message';
 
 const CELL_COUNT = 4;
 const OtpScreen = ({route, navigation}) => {
-  // const authToken = useSelector(state => state.auth); // Assuming 'authToken' is the key in your Redux state where the token is stored
-  // console.log('Auth Toke forget passn =:', authToken);
   const {phone} = route?.params;
+  const {otp} = route?.params;
   const {email} = route?.params;
-  // const {otp} = route.params.response.data.data;
-  // const [otpnum,setotp]=useState(route.params.response.data.data);
-  // console.log(route,"====>usestate");
-  // console.log(route.params.response.data.data, '====otpscreen');
   const [value, setValue] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
@@ -46,35 +45,17 @@ const OtpScreen = ({route, navigation}) => {
     setValue,
   });
 
-  const verifyOtp = async () => {
-    setLoading(true); // Start loading
-
-    try {
-      let data = {
-        code: value, // use the state value here
-        username: phone || email, // or email: email, depending on your API
-      };
-
-      let config = {
-        method: 'post',
-        url: 'https://45be-58-65-211-93.ngrok-free.app/api/v1/safeguard/auth/verify-otp',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        data: data,
-      };
-
-      const response = await axios(config);
-      console.log(response.data.data.token,"===>otp");
-
-      // Handle successful verification
-      // For example, navigate to a success screen or show a success message
-      navigation.navigate('newpass',{token:response.data.data.token,});
-    } catch (error) {
-      setRegistrationError(error.response.data.error);
-      console.error(error.response.data.error);
-      setLoading(true); // Stop loading
-      // Handle error scenario
-      // For example, show an error message
-    } finally {
+  const verifyOtp = () => {
+    if (otp === value) {
+      navigation.replace('newpass', {otp: otp, phone: phone, email: email});
+    } else {
+      showMessage({
+        message: 'Please enter valid OTP',
+        type: 'danger',
+        animated: true,
+        floating: true,
+        icon: 'danger',
+      });
     }
   };
 
@@ -102,7 +83,7 @@ const OtpScreen = ({route, navigation}) => {
       <View style={styles.forgotcontainer}>
         <Text style={styles.forgottext}>Enter OTP Code</Text>
         <Text style={styles.forgottextdetail}>
-          OTP code has been sent to {phone}
+          OTP code has been sent to {email ? email : phone}
         </Text>
       </View>
       <View style={{flex: 1}}>
@@ -128,7 +109,12 @@ const OtpScreen = ({route, navigation}) => {
       </View>
 
       <View style={styles.btcontainer}>
-        <Button fill={true} name={'Verify'} onPress={verifyOtp} />
+        <Button
+          fill={true}
+          name={'Verify'}
+          onPress={verifyOtp}
+          style={{width: '90%', alignSelf: 'center'}}
+        />
       </View>
     </SafeAreaView>
   );
@@ -155,17 +141,14 @@ const styles = StyleSheet.create({
   },
   forgottext: {
     color: '#1C75BC',
-    fontfamily: 'poppins',
-    fontWeight: '700',
+    fontFamily: PoppinsBold,
     fontSize: calculateFontSize(30),
   },
   forgottextdetail: {
     color: '#939393',
-    fontfamily: 'poppins',
-    fontWeight: '400',
+    fontFamily: PoppinsRegular,
     fontSize: calculateFontSize(13),
   },
-
   btcontainer: {
     // top:height*0.55,
     flexDirection: 'column',
@@ -179,14 +162,15 @@ const styles = StyleSheet.create({
     width: width * 0.98,
   },
   cell: {
-    width: width * 0.15,
-    height: height * 0.07,
-    lineHeight: height * 0.07,
+    width: 60,
+    height: 60,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 10,
     fontSize: 24,
     borderWidth: 2,
-    borderColor: '#00000030',
+    borderColor: '#c0c0c0',
     color: 'black',
-    textAlign: 'center',
     marginHorizontal: width * 0.02,
   },
   focusCell: {

@@ -11,29 +11,32 @@ import {
 const {width, height} = Dimensions.get('window');
 import IMG from '../../Assests/loginImg.png';
 import {Button, InputText} from '../../Components';
-import {calculateFontSize} from '../../Utilites/font';
+import {PoppinsRegular, calculateFontSize} from '../../Utilites/font';
 import Google from '../../Assests/Google.png';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import Loader from '../../Components/Loader';
-import axios from 'axios';
-
-import {connect, useDispatch, useSelector} from 'react-redux';
-import {setLoginToken} from '../../store/Action';
-import { useNavigation } from '@react-navigation/native';
-import { baseUrl } from '../../Utilites';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { tokens } from 'react-native-paper/lib/typescript/styles/themes/v3/tokens';
-
+import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {PostApiWithOutToken} from '../../api/helper';
+import {BaseUrl} from '../../api/BaseUrl';
+import {showMessage} from 'react-native-flash-message';
+import Modal from 'react-native-modal';
+import {updateUser} from '../../redux/actions/authAction';
 
 const LoginScreen = ({onLogin}) => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
   const dispatch = useDispatch();
-  const authToken = useSelector(state => state.logiToken); // Assuming 'authToken' is the key in your Redux state where the token is stored
-  console.log('logintoken Token :', authToken);
   const [registrationTriggered, setRegistrationTriggered] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState();
+  const [emailError, setEmailError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [isLoading, setLoading] = useState(false);
+  const [registrationError, setRegistrationError] = useState('');
+  const [isVisible, setIsVisible] = useState(false);
 
   const GoogleLogin = async () => {
     try {
@@ -53,13 +56,6 @@ const LoginScreen = ({onLogin}) => {
       }
     }
   };
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState();
-  const [emailError, setEmailError] = useState(null);
-  const [passwordError, setPasswordError] = useState(null);
-  const [isLoading, setLoading] = useState(false);
-  const [registrationError, setRegistrationError] = useState('');
 
   const validateEmail = () => {
     if (!email) {
@@ -87,52 +83,61 @@ const LoginScreen = ({onLogin}) => {
     }
   };
 
-
-
   const handleLogin = async () => {
+    setLoading(true);
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
 
     if (isEmailValid && isPasswordValid) {
-      setLoading(true); // Show loader
+      const loginData = new FormData();
+      loginData.append('email', email);
+      loginData.append('password', password);
 
-      const data = {
-        username: email,
-        password: password,
-      };
-
-      const config = {
-        method: 'post',
-        url: `${baseUrl}/auth/login`,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        data: data, // Convert data to JSON string
-      };
-
-      try {
-        const response = await axios(config);
-        // console.log('Login successful:', response);
-        console.log('Login successful:', response.data.token);
-        dispatch(setLoginToken(response.data.token));
-        await AsyncStorage.setItem('auth_token', response.data.token);
-        console.log("Token stored in AsyncStorage:", response.data.token);
-
-        
-
-    
-      
-        onLogin();
-        // navigation.navigate('selectprofile');
-        // ...
-
-      } catch (error) {
-        console.log('login error:',error.response.data.error);
-        setRegistrationError(error.response.data.error);
-        setLoading(true)
-      } finally {
-        // setLoading(false); // Hide loader
-      }
+      PostApiWithOutToken(`${BaseUrl}login`, loginData)
+        .then(res => {
+          console.log('res login====>', res.data);
+          if (res.data?.success) {
+            dispatch(updateUser(res.data.data));
+            setLoading(false);
+            navigation.navigate('bottomtab');
+            showMessage({
+              animated: true,
+              message: res.data.message,
+              type: 'success',
+              floating: true,
+              icon: 'success',
+            });
+          } else {
+            setLoading(false);
+            showMessage({
+              animated: true,
+              message: res?.data?.message,
+              type: 'danger',
+              floating: true,
+              icon: 'danger',
+            });
+          }
+        })
+        .catch(err => {
+          setLoading(false);
+          console.log('catch err login====>', err);
+          showMessage({
+            animated: true,
+            message: err?.response?.data?.message,
+            type: 'danger',
+            floating: true,
+            icon: 'danger',
+          });
+        });
+    } else {
+      setLoading(false);
+      showMessage({
+        animated: true,
+        message: 'email or password is invalid!',
+        type: 'danger',
+        floating: true,
+        icon: 'danger',
+      });
     }
   };
 
@@ -145,10 +150,7 @@ const LoginScreen = ({onLogin}) => {
     setRegistrationTriggered(false);
   }, [registrationTriggered]);
   const handleRegisterButtonPress = () => {
-
     setRegistrationTriggered(true);
-    // navigation.navigate('selectprofile')
-   
   };
   const onChangeText = email => {
     setEmail(email);
@@ -161,99 +163,138 @@ const LoginScreen = ({onLogin}) => {
     setRegistrationError('');
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {isLoading ? (
-        <Loader
-          isVisible={isLoading}
-          text={registrationError}
-          Cross={() => resetLoginState()}
-        />
-      ) : null}
-
-      <View style={styles.vieimagemaincontainer}>
-        <View style={styles.imgview}>
-          <Image style={{width: '100%', height: '100%'}} source={IMG} />
-        </View>
-      </View>
-      <View style={styles.loghead}>
-        <Text style={styles.texthead}>let’s get you Login!</Text>
-        <Text style={styles.subhead}>enter your information below</Text>
-      </View>
-
-      <View style={styles.togemail_number}>
-        <TouchableOpacity style={styles.loginemailandnumcontain}>
-          <Text style={styles.emailtext}>email</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.loginphoneandnumcontain}>
-          <Text style={styles.phonetext}>Phone number</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.emailcontainer}>
-        <View>
-          <InputText
-            onChangeText={onChangeText}
-            value={email}
-            placeholder={'Email'}
-          />
-          <Text style={styles.errorText}>{emailError}</Text>
-        </View>
-        <View>
-          <InputText
-            onChangeText={onChangePassword}
-            value={password}
-            pass={true}
-            placeholder={'Passsword'}
-          />
-          <Text style={styles.errorText}>{passwordError}</Text>
-        </View>
-      </View>
-      <View style={styles.forgotContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('forgotpass');
-          }}>
-          <Text style={styles.forgotpass}>Forgotpassword</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.dividercontainer}>
-        <View style={styles.hairline} />
-        <Text style={styles.loginButtonBelowText1}>Or Login With</Text>
-        <View style={styles.hairline} />
-      </View>
-
-      <View style={styles.googlebuttonContainer}>
-        <TouchableOpacity style={styles.googlebutton} onPress={GoogleLogin}>
-          <View style={styles.goggleicon}>
-            <Image
-              resizeMode="cover"
-              style={{width: '100%', height: '100%'}}
-              source={Google}
-            />
+  const handleForgotModal = () => {
+    //   {
+    //   navigation.navigate('forgotpass');
+    // }
+    return (
+      <Modal
+        isVisible={isVisible}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        backdropOpacity={0.4}
+        animationInTiming={1000}
+        animationOutTiming={1000}
+        onBackButtonPress={() => setIsVisible(false)}
+        onBackdropPress={() => setIsVisible(false)}>
+        <View style={styles.modalContainer}>
+          <View>
+            <Text style={styles.heading}>Trouble signing in?</Text>
+            <Text style={styles.heading2}>Please select the forgot type.</Text>
           </View>
-          <Text style={{color: 'black'}}>Google</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.loginbuttoncontainer}>
-        <Button
-          fill={true}
-          name={'login'}
-          onPress={handleRegisterButtonPress}
-          // onPress={()=>navigation.navigate('usersignup')}
-        
-        />
-      </View>
-      <View style={styles.lowertext}>
-        <Text style={{color: '#000'}}>Don’t have an account?</Text>
-        <Text
-          onPress={() => {
-            navigation.navigate('usersignup');
-          }}
-          style={styles.regiternowtext}>
-          Register Now
-        </Text>
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => {
+              setIsVisible(false);
+              navigation.navigate('forgotSMS');
+            }}>
+            <Text style={styles.btnText}>Send OTP via SMS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => {
+              setIsVisible(false);
+              navigation.navigate('forgotpass');
+            }}>
+            <Text style={styles.btnText}>Send OTP via Email</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  };
+
+  return (
+    <>
+      <SafeAreaView style={styles.container}>
+        {isLoading ? (
+          <Loader
+            isVisible={isLoading}
+            text={registrationError}
+            Cross={() => resetLoginState()}
+          />
+        ) : null}
+
+        <View style={styles.vieimagemaincontainer}>
+          <View style={styles.imgview}>
+            <Image style={{width: '100%', height: '100%'}} source={IMG} />
+          </View>
+        </View>
+        <View style={styles.loghead}>
+          <Text style={styles.texthead}>Let’s get you Login!</Text>
+          <Text style={styles.subhead}>Enter your information below</Text>
+        </View>
+
+        <View style={styles.togemail_number}>
+          <TouchableOpacity style={styles.loginemailandnumcontain}>
+            <Text style={styles.emailtext}>email</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.loginphoneandnumcontain}>
+          <Text style={styles.phonetext}>Phone number</Text>
+        </TouchableOpacity> */}
+        </View>
+        <View style={styles.emailcontainer}>
+          <View>
+            <InputText
+              onChangeText={onChangeText}
+              value={email}
+              placeholder={'Email'}
+            />
+            <Text style={styles.errorText}>{emailError}</Text>
+          </View>
+          <View>
+            <InputText
+              onChangeText={onChangePassword}
+              value={password}
+              pass={true}
+              placeholder={'Passsword'}
+            />
+            <Text style={styles.errorText}>{passwordError}</Text>
+          </View>
+        </View>
+        <View style={styles.forgotContainer}>
+          <TouchableOpacity onPress={() => setIsVisible(true)}>
+            <Text style={styles.forgotpass}>Forgot password</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.dividercontainer}>
+          <View style={styles.hairline} />
+          <Text style={styles.loginButtonBelowText1}>Or Login With</Text>
+          <View style={styles.hairline} />
+        </View>
+
+        <View style={styles.googlebuttonContainer}>
+          <TouchableOpacity style={styles.googlebutton} onPress={GoogleLogin}>
+            <View style={styles.goggleicon}>
+              <Image
+                resizeMode="cover"
+                style={{width: '100%', height: '100%'}}
+                source={Google}
+              />
+            </View>
+            <Text style={{color: 'black'}}>Google</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.loginbuttoncontainer}>
+          <Button
+            fill={true}
+            style={{width: '90%', alignSelf: 'center'}}
+            name={'login'}
+            onPress={handleRegisterButtonPress}
+          />
+        </View>
+        <View style={styles.lowertext}>
+          <Text style={{color: '#000'}}>Don’t have an account? </Text>
+          <Text
+            onPress={() => {
+              navigation.navigate('usersignup');
+            }}
+            style={styles.regiternowtext}>
+            Register Now
+          </Text>
+        </View>
+      </SafeAreaView>
+      {handleForgotModal()}
+    </>
   );
 };
 
@@ -274,10 +315,9 @@ const styles = StyleSheet.create({
   },
   texthead: {
     color: '#1C75BC',
-    fontfamily: 'poppins',
+    fontFamily: PoppinsRegular,
     fontWeight: '700',
     fontSize: calculateFontSize(20),
-
     ...Platform.select({
       ios: {},
     }),
@@ -290,8 +330,8 @@ const styles = StyleSheet.create({
     }),
   },
   subhead: {
-    fontFamily: 'Poppins',
-    marginVertical: height * 0.03,
+    fontFamily: PoppinsRegular,
+    top: 8,
     color: '#939393',
   },
   togemail_number: {
@@ -303,9 +343,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
   emailtext: {
-    fontFamily: 'Poppins',
+    fontFamily: PoppinsRegular,
     color: '#1C75BC',
-    fontfamily: 'poppins',
     fontWeight: '700',
     fontSize: calculateFontSize(15),
     textTransform: 'capitalize',
@@ -326,17 +365,15 @@ const styles = StyleSheet.create({
     color: '#0000',
   },
   Activephonetext: {
-    fontFamily: 'Poppins',
+    fontFamily: PoppinsRegular,
     color: '#1C75BC',
-    fontfamily: 'poppins',
     fontWeight: '700',
     fontSize: calculateFontSize(15),
     textTransform: 'capitalize',
   },
   phonetext: {
-    fontFamily: 'Poppins',
+    fontFamily: PoppinsRegular,
     color: '#1C75BC',
-    fontfamily: 'poppins',
     fontWeight: '700',
     fontSize: calculateFontSize(15),
     textTransform: 'capitalize',
@@ -360,17 +397,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: height * 0.02,
+    width: '100%',
   },
   googlebutton: {
     borderWidth: 1,
     paddingHorizontal: width * 0.05,
-    height: height * 0.05,
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
     height: height * 0.06,
     borderRadius: 5,
     borderColor: '#D7D7D7',
+    width: '40%',
+    alignSelf: 'center',
   },
   goggleicon: {
     width: width * 0.08,
@@ -403,7 +442,7 @@ const styles = StyleSheet.create({
   forgotpass: {
     color: '#1C75BC',
     fontWeight: '700',
-    fontSize: calculateFontSize(10),
+    fontSize: calculateFontSize(12),
     textTransform: 'capitalize',
   },
   loginButtonBelowText1: {
@@ -414,5 +453,43 @@ const styles = StyleSheet.create({
     fontSize: calculateFontSize(12),
     paddingHorizontal: width * 0.02,
     // marginTop: 5,
+  },
+  modalContainer: {
+    flex: 0.3,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 10,
+  },
+  btn: {
+    backgroundColor: '#1C75BC',
+    height: 50,
+    width: '90%',
+    alignSelf: 'center',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: PoppinsRegular,
+    fontWeight: 'bold',
+  },
+  heading: {
+    color: '#1C75BC',
+    fontSize: 18,
+    fontFamily: PoppinsRegular,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  heading2: {
+    color: 'gray',
+    fontSize: 14,
+    fontFamily: PoppinsRegular,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    top: 8,
   },
 });

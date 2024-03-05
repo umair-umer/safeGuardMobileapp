@@ -1,113 +1,141 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
-  FlatList,
   Dimensions,
   Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   SafeAreaView,
-  TextInput,
   ScrollView,
-  Alert,
 } from 'react-native';
 const {width, height} = Dimensions.get('window');
-import {calculateFontSize} from '../../Utilites/font';
-import Vector from '../../Assests/Vector.png';
-import {Button, InputText, Resgistrationsuccesmodal} from '../../Components';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import FontAwesome5 from 'react-native-vector-icons/dist/FontAwesome5';
-import axios from 'axios';
+import {PoppinsRegular, calculateFontSize} from '../../Utilites/font';
+import {Button, InputText} from '../../Components';
 import Loader from '../../Components/Loader';
-import {connect, useDispatch, useSelector} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {setAuthToken, setUserData} from '../../store/Action';
-import LOGO from '../../Assests/loginImg.png'
-import { baseUrl } from '../../Utilites';
+import {useDispatch} from 'react-redux';
+import LOGO from '../../Assests/loginImg.png';
+import {PostApiWithOutToken} from '../../api/helper';
+import {BaseUrl} from '../../api/BaseUrl';
+import {showMessage} from 'react-native-flash-message';
+import {setUserRole, updateUser} from '../../redux/actions/authAction';
 
-const Singupscreen = ({navigation, setAuthToken}) => {
-  const dispatch = useDispatch();
-  const [isModalVisible, setModalVisible] = useState(false);
+const Singupscreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState('');
-  const [lastname, setlastname] = useState('');
+  const [lname, setlname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [conPassword, setConPassword] = useState('');
   const [phone, setphone] = useState('');
-  const [registrationTriggered, setRegistrationTriggered] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
-  const [sucess, setsucess] = useState('');
-  
+  const dispatch = useDispatch();
 
-const HandleSignup= async()=>{
-    setLoading(true); // Show the loader
+  const HandleSignup = async () => {
+    setLoading(true);
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const validateEmail = reg.test(email);
 
-    // Create JSON data
-    const data = {
-      firstName: name,
-      lastName: lastname,
-      email: email,
-      phone: phone,
-      password: password,
-      // Include other form fields here
-    };
+    if (
+      email == '' ||
+      name == '' ||
+      lname == '' ||
+      phone == '' ||
+      password == '' ||
+      conPassword == ''
+    ) {
+      setLoading(false);
+      showMessage({
+        message: 'Please fill all fields!',
+        type: 'warning',
+        floating: true,
+        animated: true,
+        icon: 'warning',
+      });
+    } else if (!validateEmail) {
+      setLoading(false);
+      showMessage({
+        message: 'Please enter a valid email!',
+        type: 'danger',
+        floating: true,
+        animated: true,
+        icon: 'danger',
+      });
+    } else if (password !== conPassword) {
+      setLoading(false);
+      showMessage({
+        message: 'Password and Confirm assword does not match!',
+        type: 'warning',
+        floating: true,
+        animated: true,
+        icon: 'warning',
+      });
+    } else {
+      const signupData = new FormData();
+      signupData.append('name', name);
+      signupData.append('last_name', lname);
+      signupData.append('email', email);
+      signupData.append('phone', phone);
+      signupData.append('password', password);
+      signupData.append('c_password', conPassword);
 
-    const config = {
-      method: 'post',
-      url: `${baseUrl}/auth/signup`,
-      headers: { 
-        'Content-Type': 'application/json',
-        // Include any other necessary headers here
-      },
-      data: data, // Pass the JSON data
-    };
-
-    try {
-      const response = await axios(config);
-      console.log('Registration successful:', response.data);
-
-    
-      setsucess('Registration successful');
-      setModalVisible(true); // Show success modal
-      clearFields(); // Clear the form fields
-    } catch (error) {
-      console.log('Registration failed:', error);
-      // Handle errors here
-      setLoading(true);
-      setRegistrationError(error.response.data.error);
-    } 
-    
-    finally {
-      // setLoading(false); // Hide the loader
+      PostApiWithOutToken(`${BaseUrl}register`, signupData)
+        .then(res => {
+          console.log('res register====>', res.data);
+          if (res.data?.success) {
+            dispatch(updateUser(res.data?.data));
+            dispatch(setUserRole(true));
+            setLoading(false);
+            navigation.navigate('selectprofiles');
+            showMessage({
+              animated: true,
+              message: res.data.message,
+              type: 'success',
+              floating: true,
+              icon: 'success',
+            });
+          } else {
+            setLoading(false);
+            showMessage({
+              animated: true,
+              message: res?.data?.message,
+              type: 'danger',
+              floating: true,
+              icon: 'danger',
+            });
+          }
+        })
+        .catch(err => {
+          const RefrenceError = err?.response?.data?.data?.[0];
+          // console.log('RefrenceError------', RefrenceError);
+          setRegistrationError(RefrenceError);
+          showMessage({
+            animated: true,
+            message: err?.response?.data?.message,
+            type: 'danger',
+            floating: true,
+            icon: 'danger',
+          });
+        });
     }
+  };
 
-}
-useEffect(() => {
-  // Check if a button triggered the registration
-  if (registrationTriggered) {
-    HandleSignup();
-  }
-  // Reset the trigger state
-  setRegistrationTriggered(false);
-}, [registrationTriggered]); 
+  const resetLoginState = () => {
+    setLoading(false);
+    setRegistrationError('');
+  };
 
-const handleRegisterButtonPress = () => {
-  // Set the trigger state to true when the button is pressed
-  setRegistrationTriggered(true);
-};
-
-const resetLoginState = () => {
-  setLoading(false);
-  setRegistrationError('');
-};
-  
   return (
     <SafeAreaView style={styles.container}>
       {isLoading ? (
         <Loader
           isVisible={isLoading}
-          text={registrationError ? registrationError.toString() : ''}
+          text={
+            registrationError?.email
+              ? `Email: ${registrationError.email}`
+              : registrationError?.phone
+              ? `Phone: ${registrationError.phone}`
+              : ''
+          }
           Cross={() => resetLoginState()}
         />
       ) : null}
@@ -117,70 +145,56 @@ const resetLoginState = () => {
 
       <View style={styles.profileimage}>
         <Image
-        source={LOGO}
-        style={{width:"100%",height:"100%"}}
-        resizeMode="center"
+          source={LOGO}
+          style={{width: '100%', height: '100%'}}
+          resizeMode="center"
         />
       </View>
- 
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.scrolcontainer}>
         <InputText
-          placeholder="Name"
+          placeholder="First Name"
           value={name}
           onChangeText={text => setName(text)}
         />
-     
         <InputText
-          placeholder="last name"
-          value={lastname}
-          onChangeText={text => setlastname(text)}
+          placeholder="Last Name"
+          value={lname}
+          onChangeText={text => setlname(text)}
         />
-        
+
         <InputText
           placeholder="Email Address"
           value={email}
+          keyboardType="email-address"
           onChangeText={text => setEmail(text)}
         />
-        
+
+        <InputText
+          placeholder="Mobile Number"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={text => setphone(text)}
+        />
+
         <InputText
           placeholder="Password"
           value={password}
           onChangeText={text => setPassword(text)}
         />
-       
-
-     
 
         <InputText
-          placeholder="Mobile Number"
-          keyboardType="numeric"
-          value={phone}
-          onChangeText={text => setphone(text)}
+          placeholder="Confirm Password"
+          value={conPassword}
+          onChangeText={text => setConPassword(text)}
         />
-        
 
         <View style={styles.btcontainer}>
-          <Button
-            fill={true}
-            name="Register"
-           onPress={handleRegisterButtonPress}
-          />
-          {/* <Text onPress={()=>navigation.navigate('wellcome')} style={{color:"red"}}>
-            ok
-          </Text> */}
+          <Button fill={true} name="Register" onPress={HandleSignup} />
         </View>
       </ScrollView>
-
-      <Resgistrationsuccesmodal
-        isModalVisible={isModalVisible}
-        head={'Registration successful'}
-        sucees={""}
-        onPress={() => {
-          navigation.navigate('login'), setModalVisible(false);
-        }}
-      />
     </SafeAreaView>
   );
 };
@@ -190,30 +204,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   arrowcontainer: {
-    // marginTop: height * 0.04,
-    // width: width * 0.08,
-    // height: height * 0.06,
+    width: '100%',
     paddingHorizontal: width * 0.03,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   registration: {
-    marginHorizontal: width * 0.32,
     color: '#1C75BC',
-    fontfamily: 'poppins',
+    fontFamily: PoppinsRegular,
     fontWeight: '500',
     fontSize: calculateFontSize(20),
     marginTop: height * 0.06,
   },
   profileimage: {
-    marginVertical:height*0.03,
+    marginVertical: height * 0.03,
     width: width * 0.6,
     height: height * 0.14,
     overflow: 'hidden',
-    justifyContent:"center",
-    alignItems:"center",
-    marginHorizontal:width*0.2,
-   
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: width * 0.2,
+
     ...Platform.select({
       ios: {
         width: width * 0.32,
@@ -221,8 +233,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         // justifyContent:"center",
         // alignItems:"center",
-        marginHorizontal:width*0.34,
-      
+        marginHorizontal: width * 0.34,
       },
     }),
   },
@@ -280,13 +291,13 @@ const styles = StyleSheet.create({
   },
   badges: {
     color: '#000',
-    fontfamily: 'poppins',
+    fontFamily: PoppinsRegular,
     fontWeight: '700',
     fontSize: calculateFontSize(15),
   },
   changephoto: {
     color: '#1C75BC',
-    fontfamily: 'poppins',
+    fontFamily: PoppinsRegular,
     fontWeight: '500',
     fontSize: calculateFontSize(13),
   },
@@ -311,7 +322,6 @@ const styles = StyleSheet.create({
   scrolcontainer: {
     paddingHorizontal: width * 0.05,
     // marginTop: height * 0.1,
-
   },
   btcontainer: {
     // height: height * 0.5,
@@ -319,8 +329,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
 });
-
 
 export default Singupscreen;

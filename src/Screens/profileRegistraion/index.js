@@ -24,6 +24,13 @@ import axios from 'axios';
 import FormData from 'form-data';
 import {useDispatch, useSelector} from 'react-redux';
 import {baseUrl} from '../../Utilites';
+import {PostApi} from '../../api/helper';
+import {BaseUrl} from '../../api/BaseUrl';
+import {showMessage} from 'react-native-flash-message';
+import moment from 'moment';
+import Loader from '../../Components/Loader';
+import {setUserRole} from '../../redux/actions/authAction';
+import {CommonActions} from '@react-navigation/native';
 
 const ProfileRegistraion = ({navigation, route}) => {
   const userDetails = useSelector(state => state.authReducer.user);
@@ -41,97 +48,7 @@ const ProfileRegistraion = ({navigation, route}) => {
   const toggleModal = () => setModalVisible(!isModalVisible);
   const gradDetails = route.params;
 
-  // const validateFields = () => {
-  //   let isValid = true;
-
-  //   const validateField = (field, value, setError) => {
-  //     if (value.trim() === '') {
-  //       setError(`${field} is required`);
-  //       isValid = false;
-  //     } else {
-  //       setError('');
-  //     }
-  //   };
-
-  //   validateField('Name', name, setNameError);
-  //   validateField('Address', address, setAddressError);
-  //   validateField('Email', email, setEmailError);
-  //   validateField('Mobile Number', num, setNumError);
-  //   validateField('Licence Number', licnum, setLicnumError);
-  //   validateField('Date Of Birth', dob, setDobError);
-
-  //   return isValid;
-  // };
-
-  const clearFields = () => {
-    setName('');
-    setAddress('');
-    setEmail('');
-    setNum('');
-    setLicnum('');
-    setDob('');
-  };
-
-  // const uploadData = async () => {
-  //   // if (!validateFields()) {
-  //   //   Alert.alert("Validation Error", "Please fill all the required fields.");
-  //   //   return;
-  //   // }
-
-  //   setLoading(true);
-
-  //   // Create an instance of FormData
-  //   let formData = new FormData();
-
-  //   // Append form data
-  //   formData.append('name', name);
-  //   formData.append('emailAddress', email);
-  //   formData.append('mobileNumber', num);
-  //   formData.append('dob', dob);
-  //   formData.append('address', address);
-  //   formData.append('licence', licnum);
-
-  //   // Append image data if available
-  //   if (profileImage) {
-  //     // Assuming profileImage is an object with uri, type, and name
-  //     // Example: { uri: 'file-path', name: 'imageName.jpg', type: 'image/jpeg' }
-  //     const image = {
-  //       uri: profileImage.uri,
-  //       type: profileImage.type || 'image/jpeg', // Default type if not available
-  //       name: profileImage.name || 'profile.jpg', // Default name if not available
-  //     };
-  //     formData.append('picture', image);
-  //   }
-
-  //   try {
-  //     const response = await axios({
-  //       method: 'put',
-  //       url: `${baseUrl}/auth/update-profile`,
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //         Authorization: `Bearer ${authToken}`,
-  //       },
-  //       data: formData,
-  //     });
-
-  //     if (response.status === 200) {
-  //       console.log('Profile update successful:', response.data);
-  //       setModalVisible(true);
-  //     } else {
-  //       console.log('Profile update failed with status:', response.status);
-  //       Alert.alert('Update Failed', 'Please try again later.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error during profile update:', error);
-  //     Alert.alert(
-  //       'Profile Error',
-  //       'An unexpected error occurred. Please try again.',
-  //       error,
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  console.log('gradDetails=-=====>', gradDetails);
 
   const profilepicker = async () => {
     let options = {
@@ -155,7 +72,12 @@ const ProfileRegistraion = ({navigation, route}) => {
     const result = await launchImageLibrary(options);
     console.log(result);
     if (result.assets?.[0].uri) {
-      setSelectedImage(result.assets?.[0].uri);
+      const obj = {
+        name: result.assets?.[0]?.fileName,
+        type: result.assets?.[0]?.type,
+        uri: result.assets?.[0]?.uri,
+      };
+      setSelectedImage(obj);
     }
   };
   const Handlechange = () => {
@@ -163,15 +85,70 @@ const ProfileRegistraion = ({navigation, route}) => {
     navigation.navigate('bottomtab');
   };
 
+  const handleSubmit = () => {
+    setLoading(true);
+    const formdata = new FormData();
+    formdata.append('guard_type', gradDetails?.gardType);
+    formdata.append('address', address);
+    formdata.append('dob', moment(dob).format('DD-MM-YYYY'));
+    formdata.append('licence_number', licnum);
+    formdata.append('identity_image', selectedImage);
+    formdata.append('name', name);
+    formdata.append('email', email);
+    formdata.append('phone', num);
+
+    PostApi(`${BaseUrl}guard`, formdata, userDetails?.token)
+      .then(res => {
+        console.log('res register guard==>', res.data);
+        if (res.data?.success) {
+          setLoading(false);
+          showMessage({
+            message: res.data?.message || 'Guard added successfully!',
+            type: 'success',
+            icon: 'success',
+            floating: true,
+            animated: true,
+          });
+          dispatch(setUserRole(false));
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: 'bottomtab'}],
+            }),
+          );
+        } else {
+          setLoading(false);
+          showMessage({
+            message: res.data?.message,
+            type: 'warning',
+            icon: 'warning',
+            floating: true,
+            animated: true,
+          });
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        console.log('err register guard==>', err.response?.data);
+        showMessage({
+          message: err?.response?.data?.message,
+          type: 'warning',
+          icon: 'warning',
+          floating: true,
+          animated: true,
+        });
+      });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* {isLoading ? (
-      <Loader
-        isVisible={isLoading}
-        text={registrationError}
-        // Cross={() => setLoading(false)}
-      />
-    ) : null} */}
+      {isLoading && (
+        <Loader
+          isVisible={isLoading}
+          // text={registrationError}
+          Cross={() => setLoading(false)}
+        />
+      )}
       <View style={styles.arrowcontainer}>
         <TouchableOpacity
           style={styles.aerrowbackicon}
@@ -264,7 +241,7 @@ const ProfileRegistraion = ({navigation, route}) => {
             {selectedImage && (
               <View style={styles.idimage}>
                 <Image
-                  source={{uri: selectedImage}}
+                  source={{uri: selectedImage?.uri}}
                   style={{width: '100%', height: '100%', borderRadius: 8}}
                   resizeMode="contain"
                 />
@@ -274,7 +251,12 @@ const ProfileRegistraion = ({navigation, route}) => {
         </View>
 
         <View style={styles.btcontainer}>
-          <Button fill={true} name="Register" onPress={() => {}} />
+          <Button
+            fill={true}
+            name="Register"
+            onPress={handleSubmit}
+            style={{width: '90%', alignSelf: 'center'}}
+          />
         </View>
       </ScrollView>
 

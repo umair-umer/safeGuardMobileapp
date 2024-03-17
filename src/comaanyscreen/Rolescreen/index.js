@@ -1,25 +1,36 @@
-import React, { useState } from 'react'
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, SafeAreaView, TextInput, Platform } from 'react-native';
-const { width, height } = Dimensions.get("window");
-import { RadioButton } from 'react-native-paper';
-import { Button } from '../../Components';
-import { ArrowBack } from '../../Components';
-import { calculateFontSize } from '../../Utilites/font';
-function Rolescreen({ navigation }) {
+import React, {useState} from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Dimensions,
+  SafeAreaView,
+  Platform,
+} from 'react-native';
+const {width, height} = Dimensions.get('window');
+import {RadioButton} from 'react-native-paper';
+import {Button} from '../../Components';
+import {ArrowBack} from '../../Components';
+import {
+  PoppinsBold,
+  PoppinsRegular,
+  calculateFontSize,
+} from '../../Utilites/font';
+
+const Rolescreen = ({navigation}) => {
   const [selectedType, setSelectedType] = useState(null);
   const jobTypes = [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-
+    {label: 'Yes', value: 'Yes'},
+    {label: 'No', value: 'No'},
   ];
 
-  const handleTypeChange = (value) => {
+  const handleTypeChange = value => {
     setSelectedType(value);
   };
 
   return (
     <SafeAreaView style={styles.mainCon}>
-      <View style={{ paddingHorizontal: width * 0.02 }}>
+      <View style={{paddingHorizontal: width * 0.02}}>
         <ArrowBack />
       </View>
       <View style={styles.headCon}>
@@ -28,8 +39,7 @@ function Rolescreen({ navigation }) {
         </Text>
       </View>
       <View style={styles.type}>
-        {jobTypes.map((type) => (
-
+        {jobTypes.map(type => (
           <View key={type.value} style={styles.typeItem}>
             <RadioButton
               value={type.value}
@@ -40,56 +50,57 @@ function Rolescreen({ navigation }) {
             />
             <Text
               style={{
-                color: "#000", fontSize: 20,
-                color: "#1C75BC", fontWeight: "500"
-              }}
-            >{type.label}</Text>
-
+                color: '#000',
+                fontSize: 20,
+                color: '#1C75BC',
+                fontFamily: PoppinsRegular,
+              }}>
+              {type.label}
+            </Text>
           </View>
         ))}
       </View>
 
-
-      <View style={{ alignItems: "center", bottom: height * 0.02 }}>
-        <Button fill={true} name={"Next"} onPress={() => navigation.navigate('photolocation')} />
+      <View style={{alignItems: 'center', bottom: height * 0.02}}>
+        <Button
+          fill={true}
+          name={'Next'}
+          onPress={() => navigation.navigate('photolocation')}
+        />
       </View>
-
-
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   mainCon: {
     flex: 1,
     paddingHorizontal: width * 0.06,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     ...Platform.select({
       ios: {
         flex: 1,
         paddingHorizontal: width * 0.06,
-        backgroundColor: "#fff",
-      }
-    })
+        backgroundColor: '#fff',
+      },
+    }),
   },
 
   heading: {
-    color: "#1C75BC",
-    fontSize: calculateFontSize(33),
-    fontWeight: "700",
+    color: '#1C75BC',
+    fontSize: calculateFontSize(28),
+    fontFamily: PoppinsBold,
     marginVertical: height * 0.04,
-    paddingHorizontal: width * 0.04,
-    textTransform: "capitalize",
+    textTransform: 'capitalize',
     ...Platform.select({
       ios: {
-        color: "#1C75BC",
+        color: '#1C75BC',
         fontSize: calculateFontSize(33),
-        fontWeight: "700",
+        fontFamily: PoppinsBold,
         marginVertical: height * 0.04,
-        paddingHorizontal: width * 0.04,
-        textTransform: "capitalize",
-      }
-    })
+        textTransform: 'capitalize',
+      },
+    }),
   },
   typeItem: {
     flexDirection: 'row',
@@ -98,22 +109,19 @@ const styles = StyleSheet.create({
       ios: {
         flexDirection: 'row',
         alignItems: 'center',
-      }
-    })
-
+      },
+    }),
   },
   type: {
-
     flex: 1,
     // marginVertical:height*0.01,
     ...Platform.select({
-      ios:{
+      ios: {
         flex: 1,
         // marginVertical:height*0.01,
-      }
-    })
+      },
+    }),
   },
+});
 
-})
-
-export default Rolescreen
+export default Rolescreen;

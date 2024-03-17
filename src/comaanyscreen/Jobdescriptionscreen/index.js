@@ -4,16 +4,17 @@ import {
   View,
   StyleSheet,
   Dimensions,
-  Button,
   TextInput,
-  FlatList,
   TouchableOpacity,
   SafeAreaView,
-  Image,
-  Platform
+  Platform,
 } from 'react-native';
 const {width, height} = Dimensions.get('window');
-import {calculateFontSize} from '../../Utilites/font';
+import {
+  PoppinsBold,
+  PoppinsRegular,
+  calculateFontSize,
+} from '../../Utilites/font';
 import {ArrowBack} from '../../Components';
 
 function Jobdescriptionscreen({navigation}) {
@@ -63,29 +64,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: width * 0.04,
     ...Platform.select({
-      ios:{
+      ios: {
         flex: 1,
         backgroundColor: '#fff',
         justifyContent: 'center',
         paddingHorizontal: width * 0.04,
-      }
-    })
+      },
+    }),
   },
-  inpcon:{
-    paddingHorizontal:width * 0.01
+  inpcon: {
+    paddingHorizontal: width * 0.01,
   },
   heading: {
-    // marginHorizontal: width * 0.03,
     paddingHorizontal: width * 0.02,
     color: '#1C75BC',
-    fontSize: calculateFontSize(35),
-    fontWeight: '600',
+    fontSize: calculateFontSize(28),
+    fontFamily: PoppinsBold,
     ...Platform.select({
-    paddingHorizontal: width * 0.02,
-    color: '#1C75BC',
-    fontSize: calculateFontSize(35),
-    fontWeight: '600',
-    })
+      paddingHorizontal: width * 0.02,
+      color: '#1C75BC',
+      fontSize: calculateFontSize(28),
+      fontFamily: PoppinsBold,
+    }),
   },
   btncon: {
     height: height * 0.45,
@@ -93,16 +93,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     ...Platform.select({
-
-      ios:{
+      ios: {
         height: height * 0.45,
         flexDirection: 'column',
         justifyContent: 'flex-end',
         alignItems: 'center',
-      }
-    })
+      },
+    }),
   },
-
   btn: {
     width: width * 0.9,
     height: height * 0.07,
@@ -111,20 +109,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     ...Platform.select({
-      ios:{
+      ios: {
         width: width * 0.9,
         height: height * 0.07,
         backgroundColor: '#1C75BC',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 10,
-      }
-    })
+      },
+    }),
   },
   btntx: {
     color: '#fff',
     fontSize: calculateFontSize(16),
-    fontWeight: '500',
+    fontFamily: PoppinsRegular,
   },
   inp: {
     borderColor: '#1C75BC',
@@ -134,15 +132,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: height * 0.01,
     color: '#000',
+    fontFamily: PoppinsRegular,
     ...Platform.select({
       borderColor: '#1C75BC',
-    borderWidth: 1,
-    paddingHorizontal: width * 0.06,
-    paddingVertical: height * 0.015,
-    // borderRadius: 10,
-    marginVertical: height * 0.01,
-    color: '#000',
-    })
+      borderWidth: 1,
+      paddingHorizontal: width * 0.06,
+      paddingVertical: height * 0.015,
+      // borderRadius: 10,
+      marginVertical: height * 0.01,
+      color: '#000',
+      fontFamily: PoppinsRegular,
+    }),
   },
   inp1: {
     borderColor: '#1C75BC',
@@ -151,18 +151,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.06,
     paddingBottom: height * 0.15,
     borderRadius: 10,
+    fontFamily: PoppinsRegular,
     color: '#000',
     ...Platform.select({
-      ios:{
+      ios: {
         borderColor: '#1C75BC',
         borderWidth: 1,
         height: height * 0.2,
         paddingHorizontal: width * 0.06,
         paddingBottom: height * 0.15,
         borderRadius: 10,
+        fontFamily: PoppinsRegular,
         color: '#000',
-      }
-    })
+      },
+    }),
   },
 });
 

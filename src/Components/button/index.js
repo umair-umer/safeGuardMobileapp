@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {PoppinsBold, PoppinsRegular} from '../../Utilites/font';
 const {width, height} = Dimensions.get('window');
 
 const Button = ({name, onPress, fill, style}) => {
@@ -42,14 +43,14 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: '500',
     marginVertical: height * 0.02,
+    fontFamily: PoppinsRegular,
     color: 'white',
   },
   text1: {
     fontSize: 16,
-    fontWeight: '500',
     marginVertical: height * 0.02,
     color: '#1C75BC',
+    fontFamily: PoppinsRegular,
   },
 });

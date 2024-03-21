@@ -13,6 +13,13 @@ const setUserRole = res => {
     res,
   };
 };
+const setCompanyRegister = res => {
+  // console.log('setUserRole', res);
+  return {
+    type: 'COMPANY_REGISTER',
+    res,
+  };
+};
 
 const removeUser = remove => {
   return {
@@ -21,4 +28,4 @@ const removeUser = remove => {
   };
 };
 
-export {updateUser, removeUser, setUserRole};
+export {updateUser, removeUser, setUserRole, setCompanyRegister};

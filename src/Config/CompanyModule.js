@@ -27,23 +27,33 @@ import Myjpobapplicantscreen from '../comaanyscreen/Jobapplicantsscreen';
 import PendingApplicationScreen from '../comaanyscreen/pendingapplication';
 import ShortList from '../comaanyscreen/shortlis';
 import RejectedApplications from '../comaanyscreen/rejectapplication';
+import {useSelector} from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
 const CompanyModule = () => {
+  const isCompanyRegister = useSelector(
+    state => state.authReducer.isCompanyRegister,
+  );
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen
-        name="securityprofileregistry"
-        component={SecurityProfileregistry}
-      />
-      <Stack.Screen
-        name="successCompnyregister"
-        component={SuceesfullyCompanyRegister}
-      />
+      {isCompanyRegister && (
+        <>
+          <Stack.Screen
+            name="securityprofileregistry"
+            component={SecurityProfileregistry}
+          />
+          <Stack.Screen
+            name="successCompnyregister"
+            component={SuceesfullyCompanyRegister}
+          />
+        </>
+      )}
       <Stack.Screen name="companybottomtab" component={CompanyTab} />
       {/* <Stack.Screen name="myjobselect" component={Myjobslectionscreen} /> */}
       <Stack.Screen name="onetimeverified" component={OneTimeverify} />
@@ -63,7 +73,7 @@ const CompanyModule = () => {
 
 export default CompanyModule;
 
-function Applicants() {
+const Applicants = () => {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -78,9 +88,9 @@ function Applicants() {
       <Stack.Screen name="rejectscreen" component={RejectedApplications} />
     </Stack.Navigator>
   );
-}
+};
 
-function CompanyTab() {
+const CompanyTab = () => {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -145,4 +155,4 @@ function CompanyTab() {
       />
     </Tab.Navigator>
   );
-}
+};

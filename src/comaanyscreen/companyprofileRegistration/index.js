@@ -116,62 +116,70 @@ const SecurityProfileregistry = ({navigation, route}) => {
     return isValid;
   };
 
-console.log(profileImage);
+  console.log(profileImage);
 
   const handleCompanyRegister = () => {
-    const formdata = new FormData();
-    formdata.append('name', name);
-    formdata.append('web_url', webUrl);
-    formdata.append('about', about);
-    formdata.append('address', address);
-    formdata.append('location', location);
-    formdata.append('phone', num);
-    formdata.append('company_logo_image', profileImage);
+    // const formdata = new FormData();
+    // formdata.append('name', name);
+    // formdata.append('web_url', webUrl);
+    // formdata.append('about', about);
+    // formdata.append('address', address);
+    // formdata.append('location', location);
+    // formdata.append('phone', num);
+    // formdata.append('company_logo_image', profileImage);
 
-    if (Validator()) {
-      setLoading(true);
-      PostApi(`${BaseUrl}company`, formdata, userDetails?.token)
-        .then(res => {
-          console.log('res company guard==>', res.data);
-          if (res.data?.success) {
-            setLoading(false);
-            showMessage({
-              message: res.data?.message || 'Company added successfully!',
-              type: 'success',
-              icon: 'success',
-              floating: true,
-              animated: true,
-            });
-            dispatch(setUserRole(false));
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{name: 'bottomtab'}],
-              }),
-            );
-          } else {
-            setLoading(false);
-            showMessage({
-              message: res.data?.message,
-              type: 'warning',
-              icon: 'warning',
-              floating: true,
-              animated: true,
-            });
-          }
-        })
-        .catch(err => {
-          setLoading(false);
-          console.log('err company guard==>', err.response?.data);
-          showMessage({
-            message: err?.response?.data?.message,
-            type: 'warning',
-            icon: 'warning',
-            floating: true,
-            animated: true,
-          });
-        });
-    }
+    // if (Validator()) {
+    //   setLoading(true);
+    //   PostApi(`${BaseUrl}company`, formdata, userDetails?.token)
+    //     .then(res => {
+    //       console.log('res company guard==>', res.data);
+    //       if (res.data?.success) {
+    //         setLoading(false);
+    //         showMessage({
+    //           message: res.data?.message || 'Company added successfully!',
+    //           type: 'success',
+    //           icon: 'success',
+    //           floating: true,
+    //           animated: true,
+    //         });
+    navigation.navigate('successCompnyregister', {
+      name,
+      address,
+      about,
+      location,
+      num,
+      profileImage,
+    });
+    //         // dispatch(setUserRole(false));
+    //         // navigation.dispatch(
+    //         //   CommonActions.reset({
+    //         //     index: 0,
+    //         //     routes: [{name: 'bottomtab'}],
+    //         //   }),
+    //         // );
+    //       } else {
+    //         setLoading(false);
+    //         showMessage({
+    //           message: res.data?.message,
+    //           type: 'warning',
+    //           icon: 'warning',
+    //           floating: true,
+    //           animated: true,
+    //         });
+    //       }
+    //     })
+    //     .catch(err => {
+    //       setLoading(false);
+    //       console.log('err company guard==>', err.response?.data);
+    //       showMessage({
+    //         message: err?.response?.data?.message,
+    //         type: 'warning',
+    //         icon: 'warning',
+    //         floating: true,
+    //         animated: true,
+    //       });
+    //     });
+    // }
   };
 
   return (
@@ -184,7 +192,7 @@ console.log(profileImage);
           style={styles.aerrowbackicon}
           onPress={() => navigation.goBack()}>
           <Image
-            resizeMode="center"
+            resizeMode="contain"
             style={{width: '100%', height: '90%'}}
             source={Vector}
           />
@@ -198,6 +206,7 @@ console.log(profileImage);
             {profileImage ? (
               <View>
                 <Image
+                  resizeMode="cover"
                   source={{uri: profileImage?.uri}}
                   style={{width: '100%', height: '100%', resizeMode: 'cover'}}
                 />
@@ -298,14 +307,14 @@ const styles = StyleSheet.create({
     fontSize: calculateFontSize(20),
   },
   profileimage: {
-    width: width * 0.32,
-    height: height * 0.15,
+    width: 120,
+    height: 120,
     overflow: 'hidden',
     borderRadius: 100,
     ...Platform.select({
       ios: {
-        width: width * 0.32,
-        height: height * 0.15,
+        width: 120,
+        height: 120,
         overflow: 'hidden',
         borderRadius: 100,
       },

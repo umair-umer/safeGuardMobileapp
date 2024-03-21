@@ -1,6 +1,7 @@
 const init = {
   user: [],
   userRole: false,
+  isCompanyRegister: true,
 };
 const reducer = (state = init, action) => {
   // console.log('action user', action)
@@ -18,6 +19,13 @@ const reducer = (state = init, action) => {
       return {
         ...state,
         userRole: action.res,
+      };
+    }
+    case 'COMPANY_REGISTER': {
+      // console.log('action USER_ROLE', action.res)
+      return {
+        ...state,
+        isCompanyRegister: action.res,
       };
     }
 

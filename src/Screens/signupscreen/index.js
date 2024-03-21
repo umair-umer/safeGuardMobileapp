@@ -17,7 +17,11 @@ import LOGO from '../../Assests/loginImg.png';
 import {PostApiWithOutToken} from '../../api/helper';
 import {BaseUrl} from '../../api/BaseUrl';
 import {showMessage} from 'react-native-flash-message';
-import {setUserRole, updateUser} from '../../redux/actions/authAction';
+import {
+  setCompanyRegister,
+  setUserRole,
+  updateUser,
+} from '../../redux/actions/authAction';
 
 const Singupscreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(false);
@@ -84,6 +88,7 @@ const Singupscreen = ({navigation}) => {
           if (res.data?.success) {
             dispatch(updateUser(res.data?.data));
             dispatch(setUserRole(true));
+            dispatch(setCompanyRegister(true));
             setLoading(false);
             navigation.navigate('selectprofiles');
             showMessage({

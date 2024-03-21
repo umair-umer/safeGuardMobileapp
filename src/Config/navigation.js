@@ -48,8 +48,6 @@ const Nav = () => {
   const userToken = useSelector(state => state.authReducer.user);
   const userRole = useSelector(state => state.authReducer.userRole);
 
-  console.log('userRole====>', userRole);
-
   const AuthenticatedStack = () => {
     return (
       <Stack.Navigator
@@ -87,23 +85,34 @@ const Nav = () => {
   };
 
   const RegisterStack = () => {
+    const isCompanyRegister = useSelector(
+      state => state.authReducer.isCompanyRegister,
+    );
     return (
       <Stack.Navigator
         initialRouteName="selectprofiles"
         screenOptions={{headerShown: false}}>
-        <Stack.Screen name="selectprofiles" component={Selectprofile} />
-        <Stack.Screen
-          name="selectcategories"
-          component={SelectprofileCategeory}
-        />
-        <Stack.Screen name="profileregiter" component={ProfileRegistraion} />
-        <Stack.Screen name="Securitycompnay" component={CompanyModule} />
-        <Stack.Screen name="Individualmoduel" component={Individualprson} />
-        <Stack.Screen name="Trainingmodule" component={Trainingmodule} />
-        <Stack.Screen
-          name="Traininginstitutemodule"
-          component={Traininginstittutemodule}
-        />
+        {isCompanyRegister ? (
+          <>
+            <Stack.Screen name="selectprofiles" component={Selectprofile} />
+            <Stack.Screen
+              name="selectcategories"
+              component={SelectprofileCategeory}
+            />
+            <Stack.Screen
+              name="profileregiter"
+              component={ProfileRegistraion}
+            />
+            <Stack.Screen name="Individualmoduel" component={Individualprson} />
+            <Stack.Screen name="Trainingmodule" component={Trainingmodule} />
+            <Stack.Screen
+              name="Traininginstitutemodule"
+              component={Traininginstittutemodule}
+            />
+          </>
+        ) : (
+          <Stack.Screen name="Securitycompnay" component={CompanyModule} />
+        )}
       </Stack.Navigator>
     );
   };
